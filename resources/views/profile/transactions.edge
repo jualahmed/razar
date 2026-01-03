@@ -1,0 +1,99 @@
+@layout.fapp({ title: "Welcome page title" })
+<div class="mx-auto container text-center">
+    <div class="m-5 bg-white">
+
+        <h2 class="text-lg">My Transactions</h2>
+        <div class="shadow-lg rounded-lg overflow-hidden mx-4 md:mx-10">
+            <table class="w-full table-fixed overflow-scroll">
+                <thead>
+                    <tr class=" bg-white border border-secondary">
+                        <th class="w-1/4 py-4 px-6 text-left text-gray-600 font-bold uppercase border border-secondary" scope="col">
+                            S.L
+                        </th>
+                        <th class="w-1/4 py-4 px-6 text-left text-gray-600 font-bold uppercase border border-secondary text-xs" scope="col">Amount</th>
+                        <th class="w-1/4 py-4 px-6 text-left text-gray-600 font-bold uppercase border border-secondary text-xs" scope="col">Payment Method</th>
+                        <th class="w-1/4 py-4 px-6 text-left text-gray-600 font-bold uppercase border border-secondary text-xs" scope="col">Transaction ID</th>
+                        <th class="w-1/4 py-4 px-6 text-left text-gray-600 font-bold uppercase border border-secondary text-xs" scope="col"> Status </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @each((u, index) in order)
+                        <tr>
+                            <td class="py-4 px-6 border-b border-gray-200 border border-secondary">{{ u.id }}</td>
+                            <td class="py-4 px-6 border-b border-gray-200 border border-secondary ">{{ u.amount }}</td>
+                            <td class="py-4 px-6 border-b border-gray-200 border border-secondary">{{ u.payment_method }}</td>
+                            <td class="py-4 px-6 border-b border-gray-200 border border-secondary">{{ u.transaction_id }}</td>
+                            <td class="py-4 px-6 border-b border-gray-200 border border-secondary">{{ u.status }}
+                                @if(u.status=='pening')
+                                <a class=" bg-primary text-white py-1 px-2 rounded-full text-xs" href="{{ u.paymenturl }}">
+                                    Pay
+                                </a>
+                                @end
+                            </td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td colspan="5">
+                                <div class="not_found">No transactions found to show.</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="center">
+                                
+                            </td>
+                        </tr>
+                    @end
+                </tbody>
+            </table>
+        </div>
+        @if(order.length>0)
+        <div class="wl-flex wl-p">
+            <p>Showing {{ order.currentPage }} Page of {{ Math.floor(order.total/order.perPage) }} Pages</p>
+            <ul class="pagination">
+                @if (order.getPreviousPageUrl && order.getPreviousPageUrl() != null)
+                    <li class="paginate_button page-item">
+                    <a class="page-link" href="/transactions{{ order.getPreviousPageUrl() }}">
+                        Previous
+                    </a>
+                    </li>
+                    @else
+        
+                    <li class="paginate_button page-item">
+                    <p style="cursor: not-allowed !important;" class="page-link">
+                        Previous
+                    </p>
+                    </li>
+                @endif
+        
+                @each (pageNumber in [order.currentPage - 2, order.currentPage - 1, order.currentPage, order.currentPage + 1, order.currentPage + 2])
+                    @if (pageNumber >= 1 && pageNumber <= order.lastPage)
+                    <li class="paginate_button page-item  {{pageNumber === order.currentPage ? 'active' : ''}}">
+                        <a class="page-link" href="/transactions/?page={{ pageNumber }}">
+                        {{ pageNumber }}
+                        </a>
+                    </li>
+                    @endif
+                @end
+        
+                @if (order.getNextPageUrl && order.getNextPageUrl() != null)
+                    <li class="paginate_button page-item">
+                    <a class="page-link" href="/transactions{{ order.getNextPageUrl() }}">
+                        Next
+                    </a>
+                    </li>
+        
+                @else
+        
+                <li class="paginate_button page-item">
+                    <p style="cursor: not-allowed !important;" class="page-link">
+                    Next
+                    </p>
+                </li>
+        
+                @endif
+            </ul>
+        </div>
+        @end
+    </div>
+</div>
+@end

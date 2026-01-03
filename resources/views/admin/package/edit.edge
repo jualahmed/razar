@@ -1,0 +1,232 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+	@if(flashMessages.get('succes'))
+		<div class="card m-4 p-2">
+			{{ flashMessages.get('succes') }}
+		</div>
+	@endif
+
+  	@if (flashMessages.get('errors'))
+		<ul class="text-red">
+			@each((error) in flashMessages.get('errors'))
+			<li>{{ error.message }}</li>
+			@endeach
+		</ul>
+	@endif
+
+  <section class="content" style="padding: 0px !important">
+
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h3 class="card-title">Create Product Data</h3>
+        </div>
+
+        @if(message)
+          <p class="text-red">{{ message }}</p>
+        @endif
+
+        <form action="{{ route('admin.package.update', { id: product.id } ) }}?_method=PUT" class="actionForm" method="POST" enctype="multipart/form-data" accept-charset="utf-8">
+			{{ csrfField() }}
+			<div class="card-body">
+				<div class="row">
+
+					<div class="form-group col-sm-3">
+						<label for="type">product</label>
+						<select class="form-control" name="product_id" required>
+							<option value="" disabled >Select a product</option>
+							@each((u, index) in products)
+								<option {{ product.product_id==u.id ? 'selected' : '' }} value="{{ u.id }}" >{{ u.name }}</option>
+							@end
+						</select>
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="name">name</label>
+						<input type="text" class="form-control" name="name" value="{{ product.name }}"  placeholder="Enter name" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="buy_price">buy_price</label>
+						<input type="text" class="form-control" name="buy_price" value="{{ product.buy_price }}" placeholder="Enter buy_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="sale_price">sale_price</label>
+						<input type="text" class="form-control" name="sale_price" value="{{ product.sale_price }}" placeholder="Enter sale_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="stock">stock</label>
+						<input type="text" class="form-control" name="stock" value="{{ product.stock }}" placeholder="Enter quantity" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="coin">coin</label>
+						<input type="text" class="form-control" name="coin" value="{{ product.coin }}" placeholder="Enter coin" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="common_price">common_price</label>
+						<input type="text" class="form-control" name="common_price" value="{{ product.common_price }}" placeholder="Enter lavel" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="extra_fee">extra_fee</label>
+						<input type="text" class="form-control" name="extra_fee"  value="{{ product.extra_fee }}" placeholder="Enter lavel" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="lavel">lavel</label>
+						<input type="text" class="form-control" name="lavel"  value="{{ product.lavel }}" placeholder="Enter lavel" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="is_auto">is_auto</label>
+						<input type="text" class="form-control" name="is_auto"  value="{{ product.is_auto }}" placeholder="Enter is_auto" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="is_hide">is_hide</label>
+						<input type="text" class="form-control" name="is_hide"  value="{{ product.is_hide }}" placeholder="Enter is_hide" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="type">ShellType</label>
+						<select class="form-control" name="shelltype" required>
+							<option value="0" >Select </option>
+							@each((u, index) in shelltype)
+								<option {{ product.shelltype == u.id ? 'selected' : '' }} value="{{ u.id }}" >{{ u.name }}</option>
+							@end
+						</select>
+					</div>
+
+					
+
+					<div class="form-group col-sm-3">
+						<label for="tag_line">tag_line</label>
+						<input type="text" class="form-control" name="tag_line"  value="{{ product.tag_line }}" placeholder="Enter tag_line" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="server">server</label>
+						<input type="text" class="form-control" name="server"  value="{{ product.server }}" placeholder="Enter server" />
+					</div>
+					
+
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="submit" id="form_submit" class="btn btn-primary">Update</button>
+			</div>
+		</form>
+    </div>
+
+</section>
+
+
+<div class="wl-flex wl-p">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+		Add New
+	</button>
+
+	<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<form action="{{ route('admin.addrelariveid',{id:product.id}) }}" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+				<div class="modal-content">
+					<div class="modal-header">
+					<h5 class="modal-title" id="staticBackdropLabel">Add New Stock</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					</div>
+					<div class="modal-body">
+						{{ csrfField() }}
+						<div class="card-body">
+							<select class="form-control" name="product_id" required id="product">
+								<option value="" disabled {{ !flashMessages.get('old.product_id') ? 'selected' : '' }}>Select a product</option>
+								@each((u, index) in products)
+									<option value="{{ u.id }}" >{{ u.name }}</option>
+								@end
+							</select>
+							<br>
+							<select class="form-control" name="package_id" required id="packages">
+								<option value="" disabled {{ !flashMessages.get('old.package_id') ? 'selected' : '' }}>Select a Package</option>
+							</select>
+							<br>
+						</div>
+					</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</form>	
+		</div>
+	</div>
+
+	<form action="{{ route('admin.package.index') }}" method="get" id="formstore">
+		<div class="mx-auto d-flex">
+		<label class="d-flex justify-content-end">
+			<div class="px-2">Search:</div>
+			<div><input  oninput="SubmitFunction2()" type="search" placeholder="Search .." name="search" class="input-search form-control form-control-sm" placeholder="" style="color: black;"></div>
+		</label>
+		<label class="d-flex justify-content-end">
+			<div style="margin-left: 10px;">
+			<select name="status" id="" class="form-control form-control-sm">
+				<option value="Active">Active</option>
+				<option value="Pending">Pending</option>
+			</select>
+			</div>
+		</label>
+		<div class="px-2">
+			<input type="submit" id="" class="form-control form-control-sm">
+		</div>
+		</div>
+	</form>
+</div>
+
+
+
+<table class=" table bg-black m-5">
+	<tr>
+		<td>id</td>
+		<td>Unipin</td>
+		<td>Action</td>
+	</tr>
+	@each((u, index) in JSON.parse(product.relative_unipin_ids))
+	<tr>
+		<td>{{ u }}</td>
+		@each((a, i) in packages)
+			@if(a.id==u)
+			<td>{{ a.name }}</td>
+			@endif
+		@end
+		<td>
+			<a href="{{ route('admin.deleterelative',{id:product.id,index:index}) }}" class="btn btn-danger"> delete </a>
+		</td>
+	</tr>
+	@end
+</table>
+
+
+
+</div>
+
+
+@end

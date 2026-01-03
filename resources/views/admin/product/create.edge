@@ -1,0 +1,107 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+	@if(flashMessages.get('succes'))
+		<div class="card m-4 p-2">
+			{{ flashMessages.get('succes') }}
+		</div>
+	@endif
+
+  	@if (flashMessages.get('errors'))
+		<ul class="text-red">
+			@each((error) in flashMessages.get('errors'))
+			<li>{{ error.message }}</li>
+			@endeach
+		</ul>
+	@endif
+
+  <section class="content" style="padding: 0px !important">
+
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h3 class="card-title">Create Product Data</h3>
+        </div>
+
+        @if(message)
+          <p class="text-red">{{ message }}</p>
+        @endif
+
+        <form action="/admin/product" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+			{{ csrfField() }}
+			<div class="card-body">
+				<div class="row">
+
+					<div class="form-group col-sm-3">
+						<label for="name">name</label>
+						<input type="text" class="form-control" name="name" value="{{ flashMessages.get('old.name', '') }}"  placeholder="Enter name" required="" />
+					</div>
+				
+					<div class="form-group col-sm-3">
+						<label for="logo">logo</label>
+						<input type="file" class="form-control" name="logo" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="buy_price">buy_price</label>
+						<input type="text" class="form-control" name="buy_price" value="{{ flashMessages.get('old.buy_price', '') }}" placeholder="Enter buy_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="sale_price">sale_price</label>
+						<input type="text" class="form-control" name="sale_price" value="{{ flashMessages.get('old.sale_price', '') }}" placeholder="Enter sale_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="lavel">lavel</label>
+						<input type="text" class="form-control" name="lavel" value="{{ flashMessages.get('old.lavel', '') }}" placeholder="Enter lavel" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="info">Sale type </label>
+						<select class="form-control" name="saletype" required>
+							<option value="" disabled {{ !flashMessages.get('old.info') ? 'selected' : '' }}>Select a Sale Type</option>
+							<option value="1" {{ flashMessages.get('old.saletype') == 1 ? 'selected' : '' }}>Resale</option>
+							<option value="2" {{ flashMessages.get('old.saletype') == 2 ? 'selected' : '' }}>Genaral Sale</option>
+							<option value="3" {{ flashMessages.get('old.saletype') == 3 ? 'selected' : '' }}>Coin Sale</option>
+							<option value="4" {{ flashMessages.get('old.saletype') == 4 ? 'selected' : '' }}>Match Product</option>
+							<option value="5" {{ flashMessages.get('old.saletype') == 5 ? 'selected' : '' }}>Free Fire Like</option>
+						</select>
+					</div>
+					
+					{{--  category  --}}
+					<div class="form-group col-sm-3">
+						<label for="category">Category</label>
+						<select class="form-control" name="category_id" required>
+							<option value="" disabled {{ !flashMessages.get('old.category') ? 'selected' : '' }}>Select a Category</option>
+							@each((category, index) in categories)
+								<option value="{{ category.id }}" {{ flashMessages.get('old.category') == category.id ? 'selected' : '' }}>{{ category.name }}</option>
+							@endeach
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="submit" id="form_submit" class="btn btn-primary">Create</button>
+			</div>
+		</form>
+    </div>
+
+</section>
+
+</div>
+@end

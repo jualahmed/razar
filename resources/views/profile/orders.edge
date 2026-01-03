@@ -1,0 +1,139 @@
+@layout.fapp({ title: "Welcome page title" })
+<section class="orders">
+	<div class="mx-auto container text-center m-4 ">
+		<div class="px-4">
+		<div class="bg-white rounded-lg overflow-hidden mx-auto shadow-lg p-2">
+			<div class="text-left px-3 flex items-center justify-between">
+			<div class="flex items-center">
+				<svg viewBox="0 0 24 24" class="mr-2" style="width: 24px; height: 24px">
+				<path fill="currentColor" d="M11 15H17V17H11V15M9 7H7V9H9V7M11 13H17V11H11V13M11 9H17V7H11V9M9 11H7V13H9V11M21 5V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5M19 5H5V19H19V5M9 15H7V17H9V15Z"></path>
+				</svg>
+				<h2 class="text-lg text-black py-2 font-normal fb"> My Orders</h2>
+			</div>
+			{{--  <a href="https://shop.garena.my/app/100067/idlogin" target="_blank" class="bg-primary text-white p-2 rounded-md"> Redeem Code </a>  --}}
+			</div>
+			<hr class="bg-white mt-2 border border-secondary border-opacity-20">
+		
+		@each((u, index) in order)
+			<div class="m-2 font-primary capitalize">
+				<div class="sm:flex">
+					<div class="w-full sm:w-1/2">
+						<p class="px-3 py-1 text-left"><span class="font-bold">Serial NO: </span> {{ u.id }}</p>
+						<p class="px-3 py-1 text-left"><span class="font-bold">Date: </span> {{ u.createdAt.toFormat('yyyy-MM-dd hh:mm:ss a') }}</p>
+						<p class="px-3 py-1 text-left"><span class="font-bold">Package: </span> {{ u.package_name }}</p>
+					</div>
+					<div class="w-full sm:w-1/2">
+						<p class="px-3 py-1 text-left"><span class="font-bold">Price: </span> ৳ {{ u.sale_price }}</p>
+						<p class="px-3 py-1 text-left"><span class="font-bold">Status: </span> 
+							@if(u.status=='complete')
+								<span class="text-bold" style="color:#6200ee">{{  u.status }}</span>
+							@elseif(u.status=='pending' || u.status=='looking')
+								<span class="text-bold" style="color: rgb(0, 191, 99);">pending</span>
+							@else
+								<span class="text-bold" style="color: rgb(227, 11, 92);">{{  u.status }}</span>
+							@end
+							<span class="text-sm">( {{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} )</span>
+						</p>
+						
+						@if(u.info==NULL)
+						<div class="w-full">
+							<p class="px-3 py-1 text-left"><span class="font-bold">Your Code: </span></p>
+							<div style="background: rgb(241, 236, 247); margin: 0px 12px; border-radius: 5px; text-align: left; padding:5px">
+								@each((a, index) in u.digicodes)
+									<p onclick="copyText('{{ a.code }}')">{{ a.code }}</p>
+									<button onclick="copyText('{{ a.code }}')" type="button" class="align-middle px-2 py-1 text-sm font-thin rounded w-38 flex items-center text-center ml-3 mt-2" style="background: rgb(224, 224, 224); border: 2px solid rgb(109, 109, 109);">
+										Copy Code
+									</button>
+								@end
+							</div>
+						</div>
+						
+						@else
+						<div class="w-full">
+							<p class="px-3 py-1 text-left"><span class="font-bold">Account Info: </span></p>
+							<div style="background: rgb(241, 236, 247); margin: 0px 12px; border-radius: 5px; text-align: left; padding:5px">
+								@each((a, index) in JSON.parse(u.info))
+									<p>{{ index }} : {{ a }}</p>
+								@end
+							</div>
+						</div>
+						@end
+						@if(u.comment)
+							<div class="px-3 py-1 text-left">
+								<div class="w-full p-2" style="background: rgb(241, 236, 247); ">
+									{{ u.comment.comment }}
+								</div>
+							</div>
+						@endif
+					</div>
+				</div>
+			</div>
+			<hr class=" text-secondary mt-3">
+		@else
+			<div class="box-form mx-auto w-36 order-not-found">
+				<h4 class="fb-normal text-base">No code found !</h4>
+				<a href="../?#topup" class="bg-red-500 border border-red-500 hover:bg-red-500 text-white text-xs py-1 px-2 md:px-2 rounded uppercase paglabazar-btn"> Order Now </a>
+			</div>
+		@end
+		
+		@if(order.length>0)
+		<div class="wl-flex wl-p">
+			<p>Showing {{ order.currentPage }} Page of {{ Math.floor(order.total/order.perPage) }} Pages</p>
+			<ul class="pagination">
+				@if (order.getPreviousPageUrl && order.getPreviousPageUrl() != null)
+				<li class="paginate_button page-item">
+					<a class="page-link" href="/orders{{ order.getPreviousPageUrl() }}">
+					Previous
+					</a>
+				</li>
+				@else
+
+				<li class="paginate_button page-item">
+					<p style="cursor: not-allowed !important;" class="page-link">
+					Previous
+					</p>
+				</li>
+				@endif
+
+				@each (pageNumber in [order.currentPage - 2, order.currentPage - 1, order.currentPage, order.currentPage + 1, order.currentPage + 2])
+				@if (pageNumber >= 1 && pageNumber <= order.lastPage)
+					<li class="paginate_button page-item  {{pageNumber === order.currentPage ? 'active' : ''}}">
+					<a class="page-link" href="/orders/?page={{ pageNumber }}">
+						{{ pageNumber }}
+					</a>
+					</li>
+				@endif
+				@end
+
+				@if (order.getNextPageUrl && order.getNextPageUrl() != null)
+				<li class="paginate_button page-item">
+					<a class="page-link" href="/orders{{ order.getNextPageUrl() }}">
+					Next
+					</a>
+				</li>
+
+				@else
+
+				<li class="paginate_button page-item">
+				<p style="cursor: not-allowed !important;" class="page-link">
+					Next
+				</p>
+				</li>
+
+				@endif
+			</ul>
+			</div>
+		</div>
+		@end
+		</div>
+	</div>
+</section>
+@slot('script')
+    <script>
+        function copyText(ddd) {
+            navigator.clipboard.writeText(ddd.substring(5));
+            toastr["success"]("Copy")
+        }
+    </script>
+@endslot
+@end

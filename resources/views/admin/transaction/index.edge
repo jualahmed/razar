@@ -1,0 +1,128 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <section class="content">
+    <div class="wl-flex wl-p">
+      <form action="/admin/transaction" method="get" id="formstore">
+        <div class="mx-auto d-flex">
+          <label class="d-flex justify-content-end">
+            <div class="px-2">Search:</div>
+            <div class="d-flex">
+              <input  oninput="SubmitFunction2()" type="text" placeholder="transaction_id .." name="transaction_id" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+              <input  oninput="SubmitFunction2()" type="text" placeholder="number .." name="number" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+            </div>
+          </label>
+          <div class="px-2">
+            <input type="submit" id="" class="form-control form-control-sm">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+        aria-describedby="stored_data_table_info">
+        <thead>
+          <tr role="row">
+            <th>ID</th>
+            <th>Amount</th>
+            <th>User id</th>
+            <th>transaction_id</th>
+            <th>Number</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+			@each((u, index) in data)
+				<tr class="odd">
+					<td>{{ u.id }}</td>
+					<td>{{ u.amount }}</td>
+					@if(u.user)
+						<td>{{ u.user.sl  }} </td>
+					@endif
+					<td>{{ u.transaction_id }} </td>
+					<td>{{ u.sender_number }} </td>
+					<td>{{ u.createdAt.plus({ hours: 6 }).toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+					<td>{{ u.status }}</td>
+					<td>
+						@if(u.status=='pending')
+							<a href="{{route('admin.transaction.complete',{id:u.id})}}">Complete</a>
+							<a href="{{route('admin.transaction.cancel',{id:u.id})}}">cancel</a>
+						@endif
+					</td>
+				</tr>
+			@end
+        </tbody>
+      </table>
+
+      <div class="wl-flex wl-p">
+        <p>Showing {{ data.currentPage }} Page of {{ Math.floor(data.total/data.perPage) }} Pages</p>
+        <ul class="pagination">
+          @if (data.getPreviousPageUrl && data.getPreviousPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/transaction{{ data.getPreviousPageUrl() }}">
+                Previous
+              </a>
+            </li>
+            @else
+
+            <li class="paginate_button page-item">
+              <p style="cursor: not-allowed !important;" class="page-link">
+                Previous
+              </p>
+            </li>
+          @endif
+
+          @each (pageNumber in [data.currentPage - 2, data.currentPage - 1, data.currentPage, data.currentPage + 1, data.currentPage + 2])
+            @if (pageNumber >= 1 && pageNumber <= data.lastPage)
+              <li class="paginate_button page-item  {{pageNumber === data.currentPage ? 'active' : ''}}">
+                <a class="page-link" href="/admin/transaction/?page={{ pageNumber }}">
+                  {{ pageNumber }}
+                </a>
+              </li>
+            @endif
+          @end
+
+          @if (data.getNextPageUrl && data.getNextPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/transaction{{ data.getNextPageUrl() }}">
+                Next
+              </a>
+            </li>
+
+          @else
+
+          <li class="paginate_button page-item">
+            <p style="cursor: not-allowed !important;" class="page-link">
+              Next
+            </p>
+          </li>
+
+          @endif
+        </ul>
+      </div> 
+
+    </div>
+  </section>
+</div>
+@end

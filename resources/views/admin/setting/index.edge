@@ -1,0 +1,320 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Setting Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <section class="content">
+    <div class="table-responsive">
+      
+		<div class="card card-primary card-outline">
+			<div class="card-header">
+				<h3 class="card-title">Setting Data</h3>
+			</div>
+	
+			@if(message)
+			  <p class="text-red">{{ message }}</p>
+			@endif
+	
+			<form action="{{ route('admin.setting.update') }}" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+				{{ csrfField() }}
+				<div class="card-body">
+					<div class="row">
+
+						<div class="form-group col-sm-3">
+							<label for="app_name">app_name</label>
+							<input type="text" class="form-control" name="app_name" value="{{ olddata.app_name }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="small_notice">small_notice</label>
+							<input type="text" class="form-control" name="small_notice" value="{{ olddata.small_notice }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="app_link">app_link</label>
+							<input type="text" class="form-control" name="app_link" value="{{ olddata.app_link }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="number">number</label>
+							<input type="text" class="form-control" name="number" value="{{ olddata.number }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="email">email</label>
+							<input type="text" class="form-control" name="email" value="{{ olddata.email }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="fb">fb page</label>
+							<input type="text" class="form-control" name="fb" value="{{ olddata.fb }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="telegramg">telegram group</label>
+							<input type="text" class="form-control" name="telegramg" value="{{ olddata.telegramg }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="telegram">telegram</label>
+							<input type="text" class="form-control" name="telegram" value="{{ olddata.telegram }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="messenger">messenger</label>
+							<input type="text" class="form-control" name="messenger" value="{{ olddata.messenger }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="youtube">youtube</label>
+							<input type="text" class="form-control" name="youtube" value="{{ olddata.youtube }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="addmoneytuto">addmoneytuto</label>
+							<input type="text" class="form-control" name="addmoneytuto" value="{{ olddata.addmoneytuto }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="title">title</label>
+							<input type="text" class="form-control" name="title" value="{{ olddata.title }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="language">language</label>
+							<input type="text" class="form-control" name="language" value="{{ olddata.language }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="home_page_model">home_page_model</label>
+							<input type="text" class="form-control" name="home_page_model" value="{{ olddata.home_page_model }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="model_content">model_content</label>
+							<textarea name="model_content" class="form-control" cols="20" rows="5">{{ olddata.model_content }}</textarea>
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="button_text">button_text</label>
+							<input type="text" class="form-control" name="button_text" value="{{ olddata.button_text }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="button_link">button_link</label>
+							<input type="text" class="form-control" name="button_link" value="{{ olddata.button_link }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="active_refer">active_refer</label>
+							<input type="text" class="form-control" name="active_refer" value="{{ olddata.active_refer }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="min_redeem">min_redeem</label>
+							<input type="text" class="form-control" name="min_redeem" value="{{ olddata.min_redeem }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="timehide">hide (1=time show) ( 0=fullhide ) </label>
+							<input type="text" class="form-control" name="timehide" value="{{ olddata.timehide }}"  required="" />
+						</div>
+						
+						<div class="form-group col-sm-3">
+							<label for="number_hide">Number hide</label>
+							<input type="text" class="form-control" name="number_hide" value="{{ olddata.number_hide }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="coin_amount">Coin Amount = 1 TK</label>
+							<input type="text" class="form-control" name="coin_amount" value="{{ olddata.coin_amount }}"  required="" />
+						</div>
+						<div class="form-group col-sm-3">
+							<label for="dailyclame">dailyclame</label>
+							<input type="text" class="form-control" name="dailyclame" value="{{ olddata.dailyclame }}"  required="" />
+						</div>
+						<div class="form-group col-sm-3">
+							<label for="videocoin">video coin </label>
+							<input type="text" class="form-control" name="videocoin" value="{{ olddata.videocoin }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="currency">currency</label>
+							<input type="text" class="form-control" name="currency" value="{{ olddata.currency }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="tgchatid">tgchatid</label>
+							<input type="text" class="form-control" name="tgchatid" value="{{ olddata.tgchatid }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="currency">currency icon</label>
+							<input type="text" class="form-control" name="currencyicon" value="{{ olddata.currencyicon }}"  required="" />
+						</div>
+						<div class="form-group col-sm-3">
+							<label for="flotingnumber">floting number</label>
+							<input type="text" class="form-control" name="flotingnumber" value="{{ olddata.flotingnumber ? olddata.flotingnumber : 0 }}"  required="" />
+						</div>
+						<div class="form-group col-sm-3">
+							<label for="isfootershow">footershow</label>
+							<input type="text" class="form-control" name="isfootershow" value="{{ olddata.isfootershow ? olddata.isfootershow : 0 }}"  required="" />
+						</div>
+						<div class="form-group col-sm-3">
+							<label for="hide_withdrow">hide_withdrow </label>
+							<input type="text" class="form-control" name="hide_withdrow" value="{{ olddata.hide_withdrow ? olddata.hide_withdrow : 0 }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="linkapi">linkapi </label>
+							<input type="text" class="form-control" name="linkapi" value="{{ olddata.linkapi ? olddata.linkapi : 0 }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="pubg_t">pubg_t </label>
+							<input type="text" class="form-control" name="pubg_t" value="{{ olddata.pubg_t ? olddata.pubg_t : 0 }}"  required="" />
+						</div>
+
+						<div class="form-group col-sm-3">
+							<label for="pubg_uuid">pubg_uuid </label>
+							<input type="text" class="form-control" name="pubg_uuid" value="{{ olddata.pubg_uuid ? olddata.pubg_uuid : 0 }}"  required="" />
+						</div>
+
+						@if(auth.user.email=="superadmin@jual.com")
+							<div class="form-group col-sm-3">
+								<label for="devlink">dev Link</label>
+								<input type="text" class="form-control" name="devlink" value="{{ olddata.devlink ? olddata.devlink : 0 }}"  />
+							</div>
+							<div class="form-group col-sm-3">
+								<label for="devname">dev name</label>
+								<input type="text" class="form-control" name="devname" value="{{ olddata.devname ? olddata.devname : 0 }}"  />
+							</div>
+							<div class="form-group col-sm-3">
+								<label for="is_reseller">is_reseller</label>
+								<input type="text" class="form-control" name="is_reseller" value="{{ olddata.is_reseller ? olddata.is_reseller : 0 }}"  />
+							</div>
+							<div class="form-group col-sm-3">
+								<label for="user_id">user_id</label>
+								<input type="text" class="form-control" name="user_id" value="{{ olddata.user_id ? olddata.user_id : '' }}"  />
+							</div>
+							<div class="form-group col-sm-3">
+								<label for="key">key</label>
+								<input type="text" class="form-control" name="key" value="{{ olddata.key ? olddata.key : '' }}"  />
+							</div>
+							<div class="form-group col-sm-3">
+								<label for="endpoint">endpoint</label>
+								<input type="text" class="form-control" name="endpoint" value="{{ olddata.endpoint ? olddata.endpoint : '' }}"  />
+							</div>
+						@else
+							<div style="visibility:hidden; height:0px; width:0px;">
+								<div class="form-group col-sm-3">
+									<label for="devlink">dev Link</label>
+									<input type="text" class="form-control" name="devlink" value="{{ olddata.devlink ? olddata.devlink : 0 }}"  />
+								</div>
+								<div class="form-group col-sm-3">
+									<label for="devname">dev name</label>
+									<input type="text" class="form-control" name="devname" value="{{ olddata.devname ? olddata.devname : 0 }}"  />
+								</div>
+								<div class="form-group col-sm-3">
+									<label for="is_reseller">is_reseller</label>
+									<input type="text" class="form-control" name="is_reseller" value="{{ olddata.is_reseller ? olddata.is_reseller : 0 }}"  />
+								</div>
+								<div class="form-group col-sm-3">
+									<label for="user_id">user_id</label>
+									<input type="text" class="form-control" name="user_id" value="{{ olddata.user_id ? olddata.user_id : '' }}"  />
+								</div>
+								<div class="form-group col-sm-3">
+									<label for="key">key</label>
+									<input type="text" class="form-control" name="key" value="{{ olddata.key ? olddata.key : '' }}"  />
+								</div>
+								<div class="form-group col-sm-3">
+									<label for="endpoint">endpoint</label>
+									<input type="text" class="form-control" name="endpoint" value="{{ olddata.endpoint ? olddata.endpoint : '' }}"  />
+								</div>
+							</div>
+						@endif
+					</div>
+				</div>
+				<div class="card-footer">
+					<button type="submit" id="form_submit" class="btn btn-primary">Update</button>
+				</div>
+			</form>
+
+			<form action="{{ route('admin.logo.update') }}" class="actionForm" method="POST"  accept-charset="utf-8" enctype="multipart/form-data">
+				{{ csrfField() }}
+				<div class="row mx-5">
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.logo }}" alt="" width="50px" height="50px">
+						<label for="logo">logo</label>
+						<input type="file" class="form-control" name="logo" />
+					</div>
+
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.wallet_logo }}" alt="" width="50px" height="50px">
+						<label for="wallet_logo">wallet_logo</label>
+						<input type="file" class="form-control" name="wallet_logo" />
+					</div>
+					
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.auto_pay_logo }}" alt="" width="50px" height="50px">
+						<label for="auto_pay_logo">auto_pay_logo</label>
+						<input type="file" class="form-control" name="auto_pay_logo" />
+					</div>
+
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.model_banner }}" alt="" width="50px" height="50px">
+						<label for="model_banner">model_banner</label>
+						<input type="file" class="form-control" name="model_banner" />
+					</div>
+
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.ficon }}" alt="" width="50px" height="50px">
+						<label for="ficon">ficon</label>
+						<input type="file" class="form-control" name="ficon" />
+					</div>
+
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.icon192 }}" alt="" width="50px" height="50px">
+						<label for="icon192">icon192</label>
+						<input type="file" class="form-control" name="icon192" />
+					</div>
+
+					<div class="form-group col-md-3">
+						<img src="/uploads/{{ data.icon512 }}" alt="" width="50px" height="50px">
+						<label for="icon512">icon512</label>
+						<input type="file" class="form-control" name="icon512" />
+					</div>
+
+					<div class="card-footer">
+						<button type="submit" id="form_submit" class="btn btn-primary">Update</button>
+					</div>
+				</div>
+			</form>
+
+			<li class="mt-1">
+				<a href="{{ route('admin.checkadminupdate') }}" class="btn btn-sm btn-success">Admin Update</a>
+				<a href="{{ route('admin.checkuserpdate') }}" class="btn btn-sm btn-success">User Panal Update</a>
+			</li>
+
+		</div>
+    </div>
+  </section>
+</div>
+@end

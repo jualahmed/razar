@@ -1,0 +1,61 @@
+@layout.fapp({ title: "Welcome page title" })
+	<div class="relative flex items-top justify-center bg-whit sm:items-center sm:pt-0">
+		<div class="mx-auto sm:px-6 lg:px-8" style="max-width: 700px; margin: auto;">
+			<section class="md:p-5 px-4">
+				<div class="container mx-auto mt-5">
+					<div class="mx-auto sm:px-6 lg:px-8" style="max-width: 850px; margin: auto;">
+						<div class="box-form w-full sm:rounded-lg">
+							<div class="p-6 mr-2">
+								<h1 class="text-4xl sm:text-5xl text-gray-800 dark:text-white font-extrabold tracking-tight text-center topupbuzz-title">
+									Follow Us
+								</h1>
+								<div class="grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2 my-2 md:my-5 font-primary">
+	
+									<a href="https://wa.me/{{ setting.number }}" target="_blank" class="flex items-center single-support">
+										<svg viewBox="0 0 24 24" data-darkreader-inline-color="" style="width: 12%; height: 35px; color: rgb(43, 211, 73); --darkreader-inline-color: #44d45e;">
+											<path
+												fill="currentColor"
+												d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8 12.27C8.14 12.44 9.76 14.94 12.25 16C12.84 16.27 13.3 16.42 13.66 16.53C14.25 16.72 14.79 16.69 15.22 16.63C15.7 16.56 16.68 16.03 16.89 15.45C17.1 14.87 17.1 14.38 17.04 14.27C16.97 14.17 16.81 14.11 16.56 14C16.31 13.86 15.09 13.26 14.87 13.18C14.64 13.1 14.5 13.06 14.31 13.3C14.15 13.55 13.67 14.11 13.53 14.27C13.38 14.44 13.24 14.46 13 14.34C12.74 14.21 11.94 13.95 11 13.11C10.26 12.45 9.77 11.64 9.62 11.39C9.5 11.15 9.61 11 9.73 10.89C9.84 10.78 10 10.6 10.1 10.45C10.23 10.31 10.27 10.2 10.35 10.04C10.43 9.87 10.39 9.73 10.33 9.61C10.27 9.5 9.77 8.26 9.56 7.77C9.36 7.29 9.16 7.35 9 7.34C8.86 7.34 8.7 7.33 8.53 7.33Z"
+											></path>
+										</svg>
+										<h6 class="beepbazar-sm-text ml-2" style="width: 88%;">
+											যেকোন সমস্যায় এখানে ক্লিক করে আমাদের Whatsapp HelpLine এ মেসেজ দিন।
+										</h6>
+									</a>
+	
+									<a href="{{ setting.telegram }}" target="_blank" class="flex items-center single-support">
+										<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="width: 12%; height: 35px; color: rgb(0, 132, 198);">
+											<path
+												d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"
+											></path>
+										</svg>
+										<h6 class="topupbuzz-sm-text ml-2" style="width: 88%;">
+											গিভওয়ে এবং অফারের আপডেট পেতে এখানে ক্লিক করে চ্যানেলে Join করুন ।
+										</h6>
+									</a>
+									<a href="{{ setting.youtube }}" target="_blank" class="flex items-center single-support">
+										<svg viewBox="0 0 24 24" class="cursor-pointer h-6 w-6 text-white" style="width: 12%; height: 35px; color: rgb(255, 1, 1);">
+											<path
+												fill="currentColor"
+												d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,14.19 21.84,15.8 21.56,16.83C21.31,17.73 20.73,18.31 19.83,18.56C19.36,18.69 18.5,18.78 17.18,18.84C15.88,18.91 14.69,18.94 13.59,18.94L12,19C7.81,19 5.2,18.84 4.17,18.56C3.27,18.31 2.69,17.73 2.44,16.83C2.31,16.36 2.22,15.73 2.16,14.93C2.09,14.13 2.06,13.44 2.06,12.84L2,12C2,9.81 2.16,8.2 2.44,7.17C2.69,6.27 3.27,5.69 4.17,5.44C4.64,5.31 5.5,5.22 6.82,5.16C8.12,5.09 9.31,5.06 10.41,5.06L12,5C16.19,5 18.8,5.16 19.83,5.44C20.73,5.69 21.31,6.27 21.56,7.17Z"
+											></path>
+										</svg>
+										<h6 class="topupbuzz-sm-text ml-2" style="width: 88%;">
+											কিভাবে টপআপ করবেন সেটি জানতে এই ভিডিওটি&nbsp;দেখুন ।
+										</h6>
+									</a>
+									<a href="{{ setting.fb }}" class="flex items-center single-support" target="_blank">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cursor-pointer h-10 w-10 text-white" style="width: 25%; height: 35px; color: rgb(255, 1, 1);">
+											<path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H141.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287V510.1C413.8 494.8 512 386.9 512 256h0z"/>
+										</svg>
+										<h6 class="sm-text ml-2">এখানে ক্লিক করে আমাদের ফেসবুক এ ফলো করবেন</h6>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+@end

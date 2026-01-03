@@ -1,0 +1,266 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <section class="content">
+    <div class="wl-flex wl-p">
+      <a href="/admin/orders" class="btn btn-success">   </a>
+	  <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<form action="" class="actionForm " method="get" accept-charset="utf-8" enctype="multipart/form-data">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="staticBackdropLabel">Add New Stock</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						{{ csrfField() }}
+						<div class="card-body">
+							<select class="form-control" name="status" required id="packages">
+								<option value="" disabled {{ !flashMessages.get('old.package_id') ? 'selected' : '' }}>Select a Status</option>
+								<option value="pending">pending</option>
+								<option value="complete">complete</option>
+								<option value="cancel">cancel</option>
+							</select>
+							<br>
+
+							<select class="form-control" name="comment_id"  id="product">
+								<option value="" disabled {{ !flashMessages.get('old.comment_id') ? 'selected' : '' }}>Select a Comment</option>
+								@each((u, index) in prod)
+									<option value="{{ u.id }}" >{{ u.comment }}</option>
+								@end
+							</select>
+							<br>
+
+							<textarea name="content" id="" cols="52" rows="5"></textarea>
+							<br>
+						</div>
+					</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</form>	
+		</div>
+	</div>
+      <form action="/admin/orders" method="get" id="formstore">
+        <div class="mx-auto d-flex">
+          <label class="row justify-content-end">
+            <div class="px-2">Search: a</div>
+            <div class="cal-md-4">
+				<input  type="order_id" placeholder="Order Id .." name="order_id" class="input-search form-control form-control-sm" value="" placeholder="" style="color: black;">
+			</div>
+			<div class="cal-md-4">
+				<input  type="user_id" placeholder="User Id .." name="user_id" class="input-search form-control form-control-sm" value="" placeholder="" style="color: black;">
+			</div>
+			<div class="cal-md-4">
+				<label class="d-flex justify-content-end w-full">
+					<div style="margin-left: 10px;">
+					  <select name="status" id="" class="form-control form-control-sm">
+						<option value="">Select A Status</option>
+						<option value="complete">complete</option>
+						<option value="pending">pending</option>
+						<option value="looking">looking</option>
+						<option value="cancel">cancel</option>
+					  </select>
+					</div>
+				  </label>
+			</div>
+			<div class="cal-md-4">
+				<input  type="text" placeholder="Info .." name="info" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+			</div class="cal-md-4">
+			<div class="cal-md-4">
+				<input  type="date" placeholder="User Id .." name="start_date" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+			</div class="cal-md-4">
+			<div class="cal-md-4">
+				<input  type="date" placeholder="User Id .." name="end_date" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+			</div>
+          </label>
+          <div class="px-2" class="cal-md-4">
+            <input type="submit" id="" class="form-control form-control-sm">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+        aria-describedby="stored_data_table_info">
+        <thead>
+          <tr role="row">
+            <th>ID</th>
+            <th>User id</th>
+            <th>Name</th>
+            <th>Buy Price</th>
+            <th>Sale Price</th>
+            <th>Info</th>
+            <th>Code</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+            <th>Server</th>
+          </tr>
+        </thead>
+        <tbody>
+			<span class="d-none">{{total = 0;}}</span>
+			<span class="d-none">{{sale_price = 0;}}</span>
+			@each((u, index) in data)
+			<span class="d-none">{{ total += u.buy_price }} </span>
+			<span class="d-none">{{ sale_price += u.sale_price }} </span>
+				<tr class="odd">
+					<td>{{ u.id }}</td>
+					@if(u.user)
+						<td>{{ u.user.sl  }} </td>
+					@endif
+					<td>{{ u.package_name }} ( {{ u.transaction_id }}) </td>
+					<td align="right">{{ u.buy_price }} TK</td>
+					<td align="right">{{ u.sale_price }} TK</td>
+					<td>
+						@if(u.info)
+						@each((ua, index) in JSON.parse(u.info))
+							<span>{{ index }} : {{ ua }} </span> <br>
+						@end
+						@end
+					</td>
+					<td>
+						@if(u.digicodes)
+							@each((ua, index) in u.digicodes)
+								<span>{{ ua.code }}</span><br>
+							@end
+						@end
+					</td>
+					<td>{{ u.qty }} </td>
+					<td>{{ u.createdAt.plus({ hours: 6 }).toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+					{{--  <td>{{ u.createdAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>  --}}
+					<td>
+						@if(u.status=='pending')
+							<button class="btn btn-primery btn-sm text-danger">{{ u.status }}</button>
+						@elseif(u.status=='looking' || u.status=='cancel')
+							<button class="btn btn-primery btn-sm text-danger">{{ u.status }}</button>
+						@elseif(u.status=='complete')
+							<button class="btn btn-primery btn-sm text-success">{{ u.status }}</button>
+						@end
+						@if(u.count)
+							<span>{{ u.count}}</span>
+						@endif
+						@if(u.content)
+							<span>{{ u.content}}</span>
+						@endif
+						@if(u.status=='looking')
+							<a href="{{ route('admin.order.resend',[u.id]) }}" class="btn btn-success btn-sm">resend</a>
+						@endif
+					</td>
+					<td>
+						@if(u.status=='looking' || u.status=='pending')
+							<a href="{{ route('admin.order.update',[u.id]) }}" class="btn btn-success btn-sm">completed</a>
+						@endif
+						@if(u.status=='looking' || u.status=='pending')
+							<a class="btn btn-primary btn-sm orderid"  data-toggle="modal" data-target="#staticBackdrop" orderid="{{u.id}}">EDIT</a>
+						@endif
+						@if(u.editor_id)
+							<span>{{ u.editor_id }}</span>
+						@endif
+					</td>
+					<td>{{ u.server }}
+						<a class="btn btn-danger btn-sm orderid" href="{{ route('admin.order.delete',[u.id]) }}" onclick=" return confirm('Are You Sure Want To Delete?')" ><i class="fas fa-trash"></i></a>
+					</td>
+				</tr>
+			@end
+			<tr>
+				<td colspan="2"></td>
+				<td align="right">Total Orders: {{ data.total }}</td>
+				<td align="right">Total Buy Price: {{ totalBuyPrice }} TK</td>
+				<td align="right">Total Sale Price: {{ totalSalePrice }} TK</td>
+				<td>Profit: {{ totalSalePrice - totalBuyPrice }} TK</td>
+				<td colspan="3"></td>
+			</tr>
+        </tbody>
+      </table>
+
+
+
+	  
+      <div class="wl-flex wl-p">
+        <p>Showing {{ data.currentPage }} Page of {{ Math.floor(data.total/data.perPage) }} Pages</p>
+        <ul class="pagination">
+          @if (data.getPreviousPageUrl && data.getPreviousPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/orders{{ data.getPreviousPageUrl() }}{{ query }}">
+                Previous
+              </a>
+            </li>
+            @else
+
+            <li class="paginate_button page-item">
+              <p style="cursor: not-allowed !important;" class="page-link">
+                Previous
+              </p>
+            </li>
+          @endif
+
+          @each (pageNumber in [data.currentPage - 2, data.currentPage - 1, data.currentPage, data.currentPage + 1, data.currentPage + 2])
+            @if (pageNumber >= 1 && pageNumber <= data.lastPage)
+              <li class="paginate_button page-item  {{pageNumber === data.currentPage ? 'active' : ''}}">
+                <a class="page-link" href="/admin/orders/?page={{ pageNumber }}{{ query }}">
+                  {{ pageNumber }}
+                </a>
+              </li>
+            @endif
+          @end
+
+          @if (data.getNextPageUrl && data.getNextPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/orders{{ data.getNextPageUrl() }}{{ query }}">
+                Next
+              </a>
+            </li>
+
+          @else
+
+          <li class="paginate_button page-item">
+            <p style="cursor: not-allowed !important;" class="page-link">
+              Next
+            </p>
+          </li>
+
+          @endif
+        </ul>
+      </div> 
+
+    </div>
+  </section>
+</div>
+<script>
+
+ document.querySelectorAll('.orderid').forEach(function(item) {
+	var baseRoute = "{{ route('admin.order.update', ['']) }}";
+	item.addEventListener('click', function(event) {
+		var idValue = event.target.getAttribute('orderid');
+		var route = baseRoute  + idValue;
+		document.querySelector('.actionForm').setAttribute('action', route);
+	});
+});
+
+</script>
+@end

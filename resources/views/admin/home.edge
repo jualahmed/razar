@@ -1,0 +1,436 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+@if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <!-- Main content -->
+  <section class="content mt-2">
+    <div class="container-fluid">
+      <!-- Info boxes -->
+      <div class="row">
+
+		 <!-- /.col -->
+        <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/orders" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Last Month Orders</span>
+                <span class="info-box-number">{{ lastMonthOrders.length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+
+         <!-- /.col -->
+        <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/orders" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">This Month Orders</span>
+                <span class="info-box-number">{{ order.length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+		<!-- /.col -->
+		<div class="col-6 col-ms-4 col-md-2">
+			<a href="/admin/orders" class="outer-box mb-3">
+				<div class="info-box">
+				<div class="info-box-content">
+					<span class="info-box-text">Today Orders</span>
+					<span class="info-box-number">{{ comorder.length }}</span>
+				</div>
+				<!-- /.info-box-content -->
+				</div>
+				<div class="more-info">
+				More info
+				<i class="fas fa-arrow-circle-right"></i>
+				</div>
+			</a>
+			<!-- /.info-box -->
+		</div>
+
+			<!-- /.col -->
+		<div class="col-6 col-ms-4 col-md-2">
+			<a href="/admin/orders" class="outer-box mb-3">
+				<div class="info-box">
+				<div class="info-box-content">
+					<span class="info-box-text">Total Orders</span>
+					<span class="info-box-number">{{ totalOrders }}</span>
+				</div>
+				<!-- /.info-box-content -->
+				</div>
+				<div class="more-info">
+				More info
+				<i class="fas fa-arrow-circle-right"></i>
+				</div>
+			</a>
+			<!-- /.info-box -->
+		</div>
+
+
+        <!-- /.col -->
+        <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Today User</span>
+                <span class="info-box-number">{{ user.length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+        <!-- /.col -->
+        <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Today Sale</span>
+                <span class="info-box-number">{{ today_sale.total }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+         <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Yesterday Sale</span>
+                <span class="info-box-number">{{ yesterday_sale.total }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+		   <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">This Month Sale</span>
+                <span class="info-box-number">{{ thisMonthSale }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+		   <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Last Month Sale</span>
+                <span class="info-box-number">{{ lastMonthSale }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+
+			   <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Life TIme Sale</span>
+                <span class="info-box-number">{{ lifetimeSale }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+         <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Today Profit</span>
+                <span class="info-box-number">{{ today_sale.total-today_buy.total }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+
+         <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Yesterday Profit</span>
+                <span class="info-box-number">{{ yesterday_sale.total-buy_price.total }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+		{{--  thsi month profit  --}}
+		 <div class="col-6 col-ms-4 col-md-2">
+		  <a href="/admin/users" class="outer-box mb-3">
+			<div class="info-box">
+			  <div class="info-box-content">
+				<span class="info-box-text">This Month Profit</span>
+				<span class="info-box-number">{{ thisMonthSale-thisMonthBuy }}</span>
+			  </div>
+			  <!-- /.info-box-content -->
+			</div>
+			<div class="more-info">
+			  More info
+			  <i class="fas fa-arrow-circle-right"></i>
+			</div>
+		  </a>
+		 </div>
+		  <!-- /.info-box -->
+
+		  {{--  last month profit  --}}
+		 <div class="col-6 col-ms-4 col-md-2">
+		  <a href="/admin/users" class="outer-box mb-3">
+			<div class="info-box">
+			  <div class="info-box-content">
+				<span class="info-box-text">Last Month Profit</span>
+				<span class="info-box-number">{{ lastMonthSale-lastMonthBuy }}</span>
+			  </div>
+			  <!-- /.info-box-content -->
+			</div>
+			<div class="more-info">
+			  More info
+			  <i class="fas fa-arrow-circle-right"></i>
+			</div>
+		  </a>
+		 </div>
+
+		 {{--  lieft time profit  --}}
+
+		 <div class="col-6 col-ms-4 col-md-2">
+		  <a href="/admin/users" class="outer-box mb-3">
+			<div class="info-box">
+			  <div class="info-box-content">
+				<span class="info-box-text">Life Time Profit</span>
+				<span class="info-box-number">{{ lifetimeSale-lifetimeBuy }}</span>
+			  </div>
+			  <!-- /.info-box-content -->
+			</div>
+			<div class="more-info">
+			  More info
+			  <i class="fas fa-arrow-circle-right"></i>
+			</div>
+		  </a>
+		  <!-- /.info-box -->
+		</div>
+         <!-- /.col -->
+         <div class="col-6 col-ms-4 col-md-2">
+          <a href="/admin/users" class="outer-box mb-3">
+            <div class="info-box">
+              <div class="info-box-content">
+                <span class="info-box-text">Total Wallet</span>
+                <span class="info-box-number">{{ wallet.total }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <div class="more-info">
+              More info
+              <i class="fas fa-arrow-circle-right"></i>
+            </div>
+          </a>
+          <!-- /.info-box -->
+        </div>
+
+		   <!-- /.col -->
+		   <div class="col-6 col-ms-4 col-md-2">
+			<a href="/admin/users" class="outer-box mb-3">
+			  <div class="info-box">
+				<div class="info-box-content">
+				  <span class="info-box-text">Total Coin</span>
+				  <span class="info-box-number">{{ coin.total }}</span>
+				</div>
+				<!-- /.info-box-content -->
+			  </div>
+			  <div class="more-info">
+				More info
+				<i class="fas fa-arrow-circle-right"></i>
+			  </div>
+			</a>
+			<!-- /.info-box -->
+		  </div>
+
+		  	<!-- /.col -->
+			<div class="col-6 col-ms-4 col-md-2">
+			<a href="/admin/users" class="outer-box mb-3">
+				<div class="info-box">
+				<div class="info-box-content">
+					<span class="info-box-text">Total User</span>
+					<span class="info-box-number">{{ users.length }}</span>
+				</div>
+				<!-- /.info-box-content -->
+				</div>
+				<div class="more-info">
+				More info
+				<i class="fas fa-arrow-circle-right"></i>
+				</div>
+			</a>
+			<!-- /.info-box -->
+			</div>
+
+      </div>
+
+	  	<button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#staticBackdrops">
+			Add New Unipin
+		</button>
+      <!-- /.row -->
+	  <div class="table-responsive">
+		<table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+			aria-describedby="stored_data_table_info">
+			<thead>
+			<tr role="row">
+				<th>Name</th>
+				<th>Product Name</th>
+				<th>Buy Price</th>
+				<th>Sale Price</th>
+				<th>Stock</th>
+				<th>Actual Stock</th>
+				<th>Date</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<p class="d-none">{{buy_price=0}} {{ sale_price=0 }}</p>
+			<tbody class=" overflow-scroll">
+				@each((u, index) in packages)
+					<P class="d-none">{{ buy_price = buy_price+u.count*u.buy_price }} {{ sale_price = sale_price+u.count*u.sale_price }}</P>
+					<tr class="odd">
+						<td>{{ u.name }}</td>
+						<td>
+							@if(u.product)
+								<p> {{ u.product.name }} </p>
+							@end
+						</td>
+						<td>{{ u.buy_price }} </td>
+						<td>{{ u.sale_price }} </td>
+						<td>{{ u.stock }} </td>
+						<td><a href="{{ route('admin.update.actualstock',[u.id]) }}">{{ u.count }}</a> </td>
+						<td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+						<td>
+							<div class="btn-group">
+								<a href="/admin/package/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
+								<i class="fas fa-edit"></i>
+								</a>
+								<form onSubmit="return confirm('Do you want to submit?')"
+									action="{{ route('admin.package.show', { id: u.id }, { qs: { _method: 'DELETE' }} ) }}"
+									method="get"
+								>
+								{{ csrfField() }}
+									<button class="btn btn-danger" title="Move to Trash" type="submit">
+									<i class="fas fa-trash"></i>
+								</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+				@end
+				<tr>
+					<td colspan="2"></td>
+					<td>{{ parseFloat(buy_price).toFixed(2) }}</td>
+					<td>{{ parseFloat(sale_price).toFixed(2) }}</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+
+
+		<div class="modal fade" id="staticBackdrops" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<form action="{{ route('admin.storeunipin') }}" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="staticBackdropLabel">Add New Stock</h5>
+						</div>
+						<div class="modal-body">
+							{{ csrfField() }}
+							<div class="card-body">
+								<br>
+								<p style="color:aliceblue">Code</p>
+								<textarea name="code" id="" cols="55" rows="5"></textarea>
+							</div>
+              
+						</div>
+						<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</div>
+				</form>	
+			</div>
+		</div>
+
+      <!-- /.row -->
+    </div><!--/. container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+@end

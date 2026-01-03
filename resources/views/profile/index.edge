@@ -1,0 +1,144 @@
+@layout.fapp({ title: "Welcome page title" })
+<div>
+    <div class="profile-top px-4 md:px-0"><div></div></div>
+    <div style="height: 60px;">
+        <button id="userButton" class="userButton flex items-center focus:outline-none p-3" style="margin: auto; transform: translate(0px, -70px);">
+            @if(auth.user && auth.user.avatar)
+                <img src="{{ auth.user.avatar }}" backgroundcolor="#D81C4B" color="#fff" class="user_style_profile">
+            @else
+                <img src="https://ui-avatars.com/api/?name=J&size=96&background=f29f2c" backgroundcolor="#D81C4B" color="#fff" class="user_style_profile"> 
+            @end
+        </button>
+    </div>
+    <div class="text-center w-full">
+        <span class="_body2 font-semibold text-gray-500 capitalize select-none mt-1 user-child" style="font-weight: bold; 
+        color: rgb(255, 95, 1); letter-spacing: 1.1px;">Hi, {{ auth.user.fullName }}</span>
+    </div>
+    <div class="p-2">
+  
+  
+        <div style="max-width: 700px;" class="text-center m-auto">
+
+            <div class="grid md:grid-cols-4 grid-cols-2 md:gap-4 gap-3 my-2 md:my-5 mb-10 font-primary">
+                <div class="bg-white py-5 border border-secondary rounded-t-md">
+                    <h2 class="text-lg text-secondary">{{ auth.user.id }}</h2>
+                    <h2 class="text-lg">User Id</h2>
+                </div>
+                <div class="bg-white py-5 border border-secondary rounded-t-md">
+                    <h2 class="text-lg text-secondary">{{ auth.user.wallet }} ৳</h2>
+                    <h2 class="text-lg">Balance</h2>
+                </div>
+                <div class="bg-white py-5 border border-secondary rounded-t-md">
+                    <h2 class="text-lg text-secondary">{{ sale_price.total }} ৳</h2>
+                    <h2 class="text-lg">Total Spent</h2>
+                </div>
+                <div class="bg-white py-5 border border-secondary rounded-t-md">
+                    <h2 class="text-lg text-secondary">{{ order.length }}</h2>
+                    <h2 class="text-lg">Total Order</h2>
+                </div>
+            </div>
+
+        <div class="w-full text-left bg-white mt-5 border border-secondary rounded-t-md">
+            <div class="text-left px-3 flex items-center">
+                <svg viewBox="0 0 24 24" class="mr-2" style="width: 24px; height: 24px;">
+                    <path
+                        fill="currentColor"
+                        d="M21 11.1V8C21 6.9 20.1 6 19 6H11L9 4H3C1.9 4 1 4.9 1 6V18C1 19.1 1.9 20 3 20H10.2C11.4 21.8 13.6 23 16 23C19.9 23 23 19.9 23 16C23 14.1 22.2 12.4 21 11.1M9.3 18H3V8H19V9.7C18.1 9.2 17.1 9 16 9C12.1 9 9 12.1 9 16C9 16.7 9.1 17.4 9.3 18M16 21C13.2 21 11 18.8 11 16S13.2 11 16 11 21 13.2 21 16 18.8 21 16 21M17 14H15V12H17V14M17 20H15V15H17V20Z"
+                    ></path>
+                </svg>
+                <h2 class="text-lg font-primary">
+                    Account Information
+                </h2>
+            </div>
+            <hr class=" text-secondary"/>
+            <div class="px-4 py-2">
+                <div class="grid md:grid-cols-2 grid-cols-1 md:gap-8 gap-4">
+                    <div class="border border-secondary rounded-t-md box-form w-64 mx-auto p-3 text-center">
+                        <button type="button" class="border border-secondary rounded-t-md text-green-500 rounded-md px-2 py-1 m-1 transition duration-500 ease select-none" style="min-width: 100px;">
+                            <span class="flex">
+                                <svg viewBox="0 0 24 24" class="" style="width: 22px; height: 22px;">
+                                    <path
+                                        fill="currentColor"
+                                        d="M2 12C2 16.97 6.03 21 11 21C13.39 21 15.68 20.06 17.4 18.4L15.9 16.9C14.63 18.25 12.86 19 11 19C4.76 19 1.64 11.46 6.05 7.05C10.46 2.64 18 5.77 18 12H15L19 16H19.1L23 12H20C20 7.03 15.97 3 11 3C6.03 3 2 7.03 2 12Z"
+                                    ></path>
+                                </svg>
+                                <p class="pl-2 font-primary">৳ {{ auth.user.wallet }}</p>
+                            </span>
+                        </button>
+                        <h5 class="text-2xl font-bold fb-normal mt-3 font-primary">Available Balance</h5>
+                    </div>
+                    <div class="border border-secondary rounded-t-md box-form w-64 mx-auto p-3 text-center mt-0">
+                        <div class="text-center">
+                            <div class="text-center">
+                                <svg viewBox="0 0 24 24" class="mx-auto" style="width: 40px; height: 40px; color: rgb(31, 120, 255);">
+                                    <path
+                                        fill="currentColor"
+                                        d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.53L3.44,9.21L1,12L3.44,14.78L3.1,18.47L6.71,19.29L8.6,22.47L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"
+                                    ></path>
+                                </svg>
+                                <h5 class="text-2xl font-bold fb-normal mt-3 font-primary">
+                                    Account Verified!
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="w-full text-left bg-white my-4 border border-secondary rounded-t-md">
+            <div class="text-left px-3 flex items-center">
+            <svg class="mr-2" fill="#000000" width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12,1A11,11,0,1,0,23,12,11.013,11.013,0,0,0,12,1Zm0,20a9.641,9.641,0,0,1-5.209-1.674,7,7,0,0,1,10.418,0A9.167,9.167,0,0,1,12,21Zm6.694-3.006a8.98,8.98,0,0,0-13.388,0,9,9,0,1,1,13.388,0ZM12,6a4,4,0,1,0,4,4A4,4,0,0,0,12,6Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,12Z"></path>
+            </svg>
+            <h2 class="text-lg primary-font-color-text py-2 font-normal fb font-primary"> Personal Information</h2>
+            </div>
+            <div class="px-4 py-2"> 
+            <form method="POST" action="{{ route('user.update') }}">
+                {{ csrfField() }}
+                <div class="m-2">
+                    <input type="text" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2"  name="email" placeholder="Email" value="{{ auth.user.email }}" required="">
+                </div>
+                <div class="m-2">
+                    <input type="text" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2"  name="phone" placeholder="Phone" value="{{ auth.user.phone }}" required=""> 
+                </div>
+                <div class="clearfix" align="center">
+                    <input type="submit" class="bg-primary hover:bg-danger text-white font-bold py-2 px-4 border border-primary rounded" value="Update">
+                </div>
+            </form>
+            </div>
+        </div>
+        <div class="w-full text-left bg-white my-4 account-info-container hidden">
+            <div class="text-left px-3 flex items-center">
+            <svg class="mr-2" width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 11V10C9 8.34 9.5 7 12 7C14.5 7 15 8.34 15 10V11" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12 14.6C12.3314 14.6 12.6 14.3314 12.6 14C12.6 13.6687 12.3314 13.4 12 13.4C11.6686 13.4 11.4 13.6687 11.4 14C11.4 14.3314 11.6686 14.6 12 14.6Z" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14.5 17H9.5C7.5 17 7 16.5 7 14.5V13.5C7 11.5 7.5 11 9.5 11H14.5C16.5 11 17 11.5 17 13.5V14.5C17 16.5 16.5 17 14.5 17Z" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <h2 class="text-lg primary-font-color-text py-2 font-normal fb"> Change Password</h2>
+            </div>
+            <hr>
+            <div class="px-4 py-2">
+                <form method="POST" action="#">
+
+                    <div class="form-group form-group-icon">
+                        <input type="password" class="form-control shadow" name="current_password" placeholder="Current password"  required="">
+                    </div>
+                    <div class="form-group form-group-icon">
+                        <input type="password" class="form-control shadow" name="password"  placeholder="New password" required="">
+                    </div>
+                    <div class="form-group form-group-icon">
+                        <input type="password" class="form-control shadow" name="password_confirmation" placeholder="Confirm new password"  required="">
+                    </div>
+                    <div class="clearfix" align="center">
+                        <input type="submit" name="updatePassword" class="btn theme-btn-block shadow" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+@end

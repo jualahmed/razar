@@ -1,0 +1,44 @@
+@layout.fapp({ title: "Welcome page title" })
+
+<div>
+    <div class="p-2">
+    
+        <!--- app download link --->
+        <section class="md:mb-10">
+            <div class="my-5 md:my-10">
+                <a target="_blank" href="{{ setting.app_link }}" class="flex items-center" style="text-decoration:none;background:#FFE7FF;max-width:420px;border-radius:9px;padding:14px 20px;margin:auto;margin-bottom:60px;border:2px solid #de2d5999;">
+                <img style="height:70px;" class="mr-5" src="/google-play.png" alt="">
+                <div>
+                    <h4 data-v-aa72d52a="" class="font-weight-medium game-name" style="font-size:16px !important;">Download our mobile app now</h4>
+                    <p id="downloadnow" class="mb-0" style="font-weight:600 !important;">Download Now →</p>
+                </div>
+                </a>
+            </div>
+        </section>
+        <!--- /app download link --->
+
+        <script src="/js/slider.js"></script>
+        </div>
+
+        <input type="hidden" id="value" value="{{ setting?.home_page_model }}">
+
+       <script>
+            function toggleModal(modalID){
+                document.getElementById(modalID).classList.toggle("hidden");
+                document.getElementById(modalID + "-backdrop").classList.toggle("hidden");
+                document.getElementById(modalID).classList.toggle("flex");
+                document.getElementById(modalID + "-backdrop").classList.toggle("flex");
+            }
+
+            var value= document.getElementById('value').value
+            console.log(value)
+            if(value==1)
+            {
+                toggleModal('modal-id')
+            }
+           
+       </script>
+
+</div>
+    
+@end

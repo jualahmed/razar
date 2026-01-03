@@ -1,0 +1,62 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+
+  <section class="content">
+	
+    <div class="table-responsive">
+      <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+        aria-describedby="stored_data_table_info">
+        <thead>
+          <tr role="row">
+            <th>Name</th>
+            <th>Date</th>
+			<th>Views</th>
+          </tr>
+        </thead>
+        <tbody>
+		    @each((u, index) in data)
+                <tr class="odd">
+                    <td>
+						<p> {{ u.code }} </p>
+					</td>
+                    <td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+					<td>
+                       @if(!u.status)
+                        <a href="/admin/purchase/use/{{ u.id }}" class="btn btn-primary mr-2" title="Edit">
+                            USE IT
+                        </a>
+                       @else
+                         <a href="" class="btn btn-danger mr-2">USED</a>
+                       @endif
+					</td>
+                </tr>
+            @end
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+</div>
+@end

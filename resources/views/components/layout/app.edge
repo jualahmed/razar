@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/admin/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <link rel="stylesheet" href="/admin/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="/admin/dist/css/customer.css">
+  <link rel="stylesheet" href="/admin/style.css">
+  <link rel="stylesheet" href="/admin/dist/customercss/toastr_toastr.min.css" />
+</head>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+  @include('./components/layout/navbar')
+  @include('./components/layout/sidebar')
+  {{{ await $slots.main() }}}
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2014-2023 <a href="">Welfir Pay</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+      <b>Version</b> 3.1.0
+    </div>
+  </footer>
+</div>
+<script src="/admin/plugins/jquery/jquery.min.js"></script>
+<script src="/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/admin/dist/js/adminlte.js"></script>
+<script src="/admin/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+<script src="/admin/plugins/raphael/raphael.min.js"></script>
+<script src="/admin/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+<script src="/admin/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+<script src="/admin/plugins/chart.js/Chart.min.js"></script>
+<script src="/admin/dist/js/demo.js"></script>
+<script src="/admin/dist/js/clipboard.min.js"></script>
+<script src="/admin/dist/js/toastr.min.js"></script>
+<script>
+
+$('#product').on('change', function() {
+    var selectedValue = $(this).val();
+
+    $.ajax({
+        url: '/admin/purchase/'+selectedValue, 
+        type: 'GET', 
+        success: function(response) {
+			response.forEach(function(data) {
+				var value =data.id;
+				var text = data.name;
+				$('#packages').append($('<option>', {
+					value: value,
+					text: text
+				}));
+        	});
+        },
+        error: function(xhr) {
+            console.log(xhr)
+        }
+    });
+});
+
+
+</script>
+<script>
+  function SubmitFunction()
+  {
+   document.getElementById("formpayment").submit();
+  }
+
+  function SubmitFunction2()
+  {
+   document.getElementById("formstore").submit();
+  }
+  </script>
+  <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+  <script>
+    CKEDITOR.replace('editor1');
+    CKEDITOR.replace('editor2');
+    CKEDITOR.replace('editor3');
+</script>
+</body>
+</html>

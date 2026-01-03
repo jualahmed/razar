@@ -1,0 +1,150 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <section class="content">
+    <div class="wl-flex wl-p">
+      <a href="/admin/product/create" class="btn btn-success"> Add  </a>
+      <form action="/admin/product" method="get" id="formstore">
+        <div class="mx-auto d-flex">
+          <label class="d-flex justify-content-end">
+            <div class="px-2">Search:</div>
+            <div><input  oninput="SubmitFunction2()" type="search" placeholder="Search .." name="search" class="input-search form-control form-control-sm" placeholder="" style="color: black;"></div>
+          </label>
+          <label class="d-flex justify-content-end">
+            <div style="margin-left: 10px;">
+              <select name="status" id="" class="form-control form-control-sm">
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+          </label>
+          <div class="px-2">
+            <input type="submit" id="" class="form-control form-control-sm">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+        aria-describedby="stored_data_table_info">
+        <thead>
+          <tr role="row">
+            <th>ID</th>
+            <th>Logo</th>
+            <th>Name</th>
+            <th>Buy Price</th>
+            <th>Sale Price</th>
+            <th>Stock</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+			@each((u, index) in data)
+				<tr class="odd">
+					<td>{{ u.id }}</td>
+					<td><img src="/uploads/{{ u.logo }}" alt="" width="50px" height="50px"></td>
+					<td>{{ u.name }}</td>
+					<td>{{ u.buy_price }} </td>
+					<td>{{ u.sale_price }} </td>
+					<td>{{ u.quantity }} </td>
+					<td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+					<td>
+					@if(u.is_active==1)
+						<a href="#" class="btn btn-xs btn-primary">Active</a>
+					@else
+						<a  href="#"  class="btn btn-xs btn-danger">Inactive</a>
+					@end
+					</td>
+					<td>
+					<div class="btn-group">
+						<a href="/admin/product/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
+						<i class="fas fa-edit"></i>
+						</a>
+						{{--  onSubmit="return confirm('Do you want to submit?') "    --}}
+						<form 
+							action="{{ route('admin.product.show', { id: u.id }, { qs: { _method: 'DELETE' }}) }}"
+							method="get">
+							{{ csrfField() }}
+							<button onsubmit="return confirm('Do you want to submit?')" class="btn btn-danger" title="Move to Trash" type="submit">
+								<i class="fas fa-trash"></i>
+							</button>
+						</form>
+					</div>
+					</td>
+				</tr>
+			@end
+        </tbody>
+      </table>
+
+      <div class="wl-flex wl-p">
+        <p>Showing {{ data.currentPage }} Page of {{ Math.floor(data.total/data.perPage) }} Pages</p>
+        <ul class="pagination">
+          @if (data.getPreviousPageUrl && data.getPreviousPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/product{{ data.getPreviousPageUrl() }}">
+                Previous
+              </a>
+            </li>
+            @else
+
+            <li class="paginate_button page-item">
+              <p style="cursor: not-allowed !important;" class="page-link">
+                Previous
+              </p>
+            </li>
+          @endif
+
+          @each (pageNumber in [data.currentPage - 2, data.currentPage - 1, data.currentPage, data.currentPage + 1, data.currentPage + 2])
+            @if (pageNumber >= 1 && pageNumber <= data.lastPage)
+              <li class="paginate_button page-item  {{pageNumber === data.currentPage ? 'active' : ''}}">
+                <a class="page-link" href="/admin/product/?page={{ pageNumber }}">
+                  {{ pageNumber }}
+                </a>
+              </li>
+            @endif
+          @end
+
+          @if (data.getNextPageUrl && data.getNextPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/product{{ data.getNextPageUrl() }}">
+                Next
+              </a>
+            </li>
+
+          @else
+
+          <li class="paginate_button page-item">
+            <p style="cursor: not-allowed !important;" class="page-link">
+              Next
+            </p>
+          </li>
+
+          @endif
+        </ul>
+      </div> 
+
+    </div>
+  </section>
+</div>
+@end

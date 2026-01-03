@@ -1,0 +1,151 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Product Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  @if(flashMessages.get('success'))
+    <div class="card m-4 p-2">
+        {{ flashMessages.get('success') }}
+    </div>
+  @endif
+  <section class="content">
+    <div class="wl-flex wl-p">
+      <a href="{{ route('admin.package.create') }}" class="btn btn-success"> Add  </a>
+      <form action="{{ route('admin.package.index') }}" method="get" id="formstore">
+        <div class="mx-auto d-flex">
+		  <label class="d-flex justify-content-end">
+            <div style="margin-left: 10px;">
+              <select name="product_id" id="" class="form-control form-control-sm">
+                <option value="">Select A Product</option>
+				@each((u, index) in product)
+					<option value="{{ u.id }}" >{{ u.name }}</option>
+				@end
+              </select>
+            </div>
+          </label>
+
+		  	<div class="cal-md-4">
+				<input  type="text" placeholder="tag_line .." name="tag_line" class="input-search form-control form-control-sm" placeholder="" style="color: black;">
+			</div class="cal-md-4">
+        
+          <div class="px-2">
+            <input type="submit" id="" class="form-control form-control-sm">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
+        aria-describedby="stored_data_table_info">
+        <thead>
+          <tr role="row">
+            <th>Name</th>
+            <th>Product Name</th>
+            <th>Buy Price</th>
+            <th>Sale Price</th>
+            <th>Stock</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+		    @each((u, index) in data)
+                <tr class="odd">
+                    <td>{{ u.name }}</td>
+                    <td>
+						@if(u.product)
+							<p> {{ u.product.name }} </p>
+						@end
+					</td>
+                    <td>{{ u.buy_price }} </td>
+                    <td>{{ u.sale_price }} </td>
+                    <td>{{ u.stock }} </td>
+                    <td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
+                    <td>
+						<div class="btn-group">
+							<a href="/admin/package/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
+							<i class="fas fa-edit"></i>
+							</a>
+
+							
+							<form onSubmit="return confirm('Do you want to submit?')"
+								action="{{ route('admin.package.show', { id: u.id }, { qs: { _method: 'DELETE' }} ) }}"
+								method="get"
+							>
+							{{ csrfField() }}
+								<button class="btn btn-danger" title="Move to Trash" type="submit">
+								<i class="fas fa-trash"></i>
+							</button>
+							</form>
+
+
+						</div>
+                    </td>
+                </tr>
+            @end
+        </tbody>
+      </table>
+
+      <div class="wl-flex wl-p">
+        <p>Showing {{ data.currentPage }} Page of {{ Math.floor(data.total/data.perPage) }} Pages</p>
+        <ul class="pagination">
+          @if (data.getPreviousPageUrl && data.getPreviousPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/package{{ data.getPreviousPageUrl() }}">
+                Previous
+              </a>
+            </li>
+            @else
+
+            <li class="paginate_button page-item">
+              <p style="cursor: not-allowed !important;" class="page-link">
+                Previous
+              </p>
+            </li>
+          @endif
+
+          @each (pageNumber in [data.currentPage - 2, data.currentPage - 1, data.currentPage, data.currentPage + 1, data.currentPage + 2])
+            @if (pageNumber >= 1 && pageNumber <= data.lastPage)
+              <li class="paginate_button page-item  {{pageNumber === data.currentPage ? 'active' : ''}}">
+                <a class="page-link" href="/admin/package/?page={{ pageNumber }}">
+                  {{ pageNumber }}
+                </a>
+              </li>
+            @endif
+          @end
+
+          @if (data.getNextPageUrl && data.getNextPageUrl() != null)
+            <li class="paginate_button page-item">
+              <a class="page-link" href="/admin/package{{ data.getNextPageUrl() }}">
+                Next
+              </a>
+            </li>
+
+          @else
+
+          <li class="paginate_button page-item">
+            <p style="cursor: not-allowed !important;" class="page-link">
+              Next
+            </p>
+          </li>
+
+          @endif
+        </ul>
+      </div> 
+
+    </div>
+  </section>
+</div>
+@end

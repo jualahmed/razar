@@ -1,0 +1,134 @@
+@layout.app({ title: "Welcome page title" })
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Packages Data</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+	@if(flashMessages.get('succes'))
+		<div class="card m-4 p-2">
+			{{ flashMessages.get('succes') }}
+		</div>
+	@endif
+
+  	@if (flashMessages.get('errors'))
+		<ul class="text-red">
+			@each((error) in flashMessages.get('errors'))
+			<li>{{ error.message }}</li>
+			@endeach
+		</ul>
+	@endif
+
+  <section class="content" style="padding: 0px !important">
+
+    <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h3 class="card-title">Create Packages Data</h3>
+        </div>
+
+        @if(message)
+          <p class="text-red">{{ message }}</p>
+        @endif
+
+        <form action="/admin/package/?p_id={{ request.qs().p_id  }}" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
+			{{ csrfField() }}
+			<div class="card-body">
+				<div class="row">
+
+					<div class="form-group col-sm-3">
+
+						<label for="type">Product</label>
+						<select class="form-control" name="product_id" required>
+						  <option value="" disabled {{ !(flashMessages.get('old.product_id') || request.qs().p_id) ? 'selected' : '' }}>
+							Select a product
+						  </option>
+						  @each((u, index) in products)
+							<option 
+							  value="{{ u.id }}" 
+							  {{
+								(flashMessages.get('old.product_id') == u.id || 
+								 (!flashMessages.get('old.product_id') && request.qs().p_id == u.id)) 
+								  ? 'selected' 
+								  : ''
+							  }}>
+							  {{ u.name }}
+							</option>
+						  @end
+						</select>
+					  </div>
+
+
+					<div class="form-group col-sm-3">
+						<label for="name">name</label>
+						<input type="text" class="form-control" name="name" value="{{ flashMessages.get('old.name', '') }}"  placeholder="Enter name" required="" />
+					</div>
+
+				
+					<div class="form-group col-sm-3">
+						<label for="buy_price">buy_price</label>
+						<input type="text" class="form-control" name="buy_price" value="{{ flashMessages.get('old.buy_price', '') }}" placeholder="Enter buy_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="sale_price">sale_price</label>
+						<input type="text" class="form-control" name="sale_price" value="{{ flashMessages.get('old.sale_price', '') }}" placeholder="Enter sale_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="stock">stock</label>
+						<input type="text" class="form-control" name="stock" value="{{ flashMessages.get('old.stock', '5000000') }}" placeholder="Enter quantity" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="coin">coin</label>
+						<input type="text" class="form-control" name="coin" value="{{ flashMessages.get('old.coin', '0') }}" placeholder="Enter coin" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="common_price">common_price</label>
+						<input type="text" class="form-control" name="common_price" value="{{ flashMessages.get('old.common_price', '1') }}" placeholder="Enter common_price" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="extra_fee">extra_fee</label>
+						<input type="text" class="form-control" name="extra_fee" value="{{ flashMessages.get('old.extra_fee', '0') }}" placeholder="Enter extra_fee" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="lavel">lavel</label>
+						<input type="text" class="form-control" name="lavel" value="{{ flashMessages.get('old.lavel', '1') }}" placeholder="Enter lavel" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="is_auto">is_auto</label>
+						<input type="text" class="form-control" name="is_auto" value="{{ flashMessages.get('old.is_auto', '1') }}" placeholder="Enter is_auto" required="" />
+					</div>
+
+					<div class="form-group col-sm-3">
+						<label for="is_hide">is_hide</label>
+						<input type="text" class="form-control" name="is_hide"  value="{{ flashMessages.get('old.is_hide', '0') }}" placeholder="Enter is_hide" required="" />
+					</div>
+			
+				</div>
+			</div>
+			<div class="card-footer">
+				<button type="submit" id="form_submit" class="btn btn-primary">Create</button>
+			</div>
+		</form>
+    </div>
+
+</section>
+
+</div>
+@end

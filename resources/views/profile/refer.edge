@@ -1,0 +1,281 @@
+@layout.fapp({ title: "Welcome page title" })
+<div class="container mx-auto text-center my-20 overflow-x-scroll">
+    <div class="w-full max-w-4xl mx-auto py-12 md:py-16">
+        <div class="grid gap-8 md:gap-12">
+            <div class="space-y-6">
+                <div class=" border shadow bg-gradient-to-r from-blue-500 to-blue-700 bg-white rounded-lg p-6 text-center">
+                    <div class="space-y-2">
+                        <div class="text-lg font-semibold">Your Wallet</div>
+                        <div class="flex items-center justify-center space-x-2">
+                            <img alt="coin" loading="lazy" width="0" height="0" decoding="async" data-nimg="1" class="h-7 w-7" src="/twocoins.svg" style="color: transparent;" />
+                            <div class="text-3xl font-bold">{{ auth.user.coin }}</div>
+                        </div>
+                        <h3>100 Coins = 1 TK</h3>
+                        <br>
+                        <a
+                            href="{{ route('coinredeem') }}"
+                            class="rounded-md cursor-pointer text-sm font-medium transition-colors focus-visible:outline-none bg-primary/90 h-9 px-4 py-2 bg-webmary-500 text-white mt-4"
+                        >
+                            Redeem
+                        </a>
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-card text-card-foreground shadow p-6 bg-white">
+                    <div class="space-y-4 text-center">
+                        <div class="text-lg font-semibold">Invite friends &amp; businesses</div>
+                        <div class="text-sm text-muted-foreground">Copy your code, share it with your friends.</div>
+                        <div class="text-sm">Your personal code</div>
+                        <div class="flex items-center justify-center space-x-2 border-dotted border-2 border-webmary-500 p-2 rounded-md">
+                            <div class="font-mono text-xs md:text-base text-center">{{ url }}/rfl/{{ auth.user.id }} <input type="hidden" id="myInput" value="{{ url }}/rfl/{{ auth.user.id }}"></div>
+                            <button
+                                class="items-center justify-center rounded-md text-sm font-medium  disabled:opacity-50 shadow bg-primary h-9 px-4 py-2 text-white hidden md:block"
+                                type="button"
+                                onclick="copyText()"
+                            >
+                                Copy
+                            </button>
+                        </div>
+                        <div class="text-sm">OR</div>
+                        <div class="flex items-center justify-center space-x-4">
+                            <a target="_blank" href="https://www.facebook.com/sharer.php?u={{ url }}%2Frfl%{{ auth.user.id }}" rel="noopener noreferrer">
+                                <img alt="facebook" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" src="/facebook.svg" style="color: transparent;" />
+                            </a>
+                            <a target="_blank" href="https://api.whatsapp.com/send/?phone&amp;text={{ url }}/rfl/{{ auth.user.id }}" rel="noopener noreferrer">
+                                <img alt="whatsapp" loading="lazy" width="38" height="38" decoding="async" data-nimg="1" src="/whatsapp.svg" style="color: transparent;" />
+                            </a>
+                            <a target="_blank" href="mailto:?subject=Join with my code&amp;body={{ url }}/rfl/{{ auth.user.id }}" rel="noopener noreferrer">
+                                <img alt="mail" loading="lazy" width="36" height="36" decoding="async" data-nimg="1" src="/gmail.svg" style="color: transparent;" />
+                            </a>
+                            <a target="_blank" href="fb-messenger://share/?link={{ url }}/rfl/{{ auth.user.id }}" rel="noopener noreferrer">
+                                <img alt="messenger" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" src="/messenger.svg" style="color: transparent;" />
+                            </a>
+                            <a target="_blank" href="https://imo.im/?text={{ url }}%2Frfl%{{ auth.user.id }}" rel="noopener noreferrer">
+                                <img alt="imo" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" src="/imo.svg" style="color: transparent;" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-card text-card-foreground shadow p-6 bg-white">
+                    <div class="space-y-4">
+                        <div class="text-lg font-semibold">Daily Claimed</div>
+                        <div class="flex items-center justify-between p-4 bg-gray-100 rounded-xl">
+                            <div class="flex gap-2 items-center align-middle">
+                                <div class="text-md font-bold">+100 COINS</div>
+                                <img alt="coin" loading="lazy" width="0" height="0" decoding="async" data-nimg="1" class="h-5 w-5" src="/coin.svg" style="color: transparent;" />
+                            </div>
+                            
+                            @if(is_clame.length==0)
+                                <a href="{{ route('daily.clame') }}" class="cursor-pointer items-center justify-center rounded-md text-sm font-medium shadow bg-primary h-9 px-4 py-2 text-white hidden md:block">
+                                    Claim
+                                </a>
+                            @else
+                                <button class="items-center justify-center rounded-md text-sm font-medium  disabled:opacity-50 shadow bg-primary h-9 px-4 py-2 text-white hidden md:block" disabled="">
+                                    Claim
+                                </button>
+                            @end
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-card text-card-foreground shadow p-6 bg-white">
+                    <div class="space-y-4">
+                        <div class="text-lg font-semibold">Upload Video</div>
+                        <div class="flex gap-2 justify-between">
+                            <div class="flex gap-2">
+                                Get <span class="font-semibold justify-center items-center">+7000 COINS</span>
+                                <img alt="coin" loading="lazy" width="0" height="0" decoding="async" data-nimg="1" class="h-5 w-5" src="/coin.svg" style="color: transparent;" />
+                            </div>
+                        </div>
+                      
+                        <div class="text-sm text-muted-foreground">
+                            <div class="flex gap-1 justify-start align-middle">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="lucide lucide-circle h-4 w-4 inline-block"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                আমাদের ওয়েবসাইট নিয়ে একটি ভিডিও Facebook, YouTube অথবা TikTok আপলোড করুন।
+                            </div>
+                            <div class="flex gap-1 justify-start align-middle">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="lucide lucide-circle h-4 w-4 inline-block"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                ভিডিওর কমেন্টে আপনার রেফার লিংক ব্যবহার করুন।
+                            </div>
+                            <div class="flex gap-1 justify-start align-middle">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="lucide lucide-circle h-4 w-4 inline-block"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                ভিডিওতে আমাদের ওয়েবসাইট সম্বন্ধে বিস্তারিত বলুন।
+                            </div>
+                            <div class="flex gap-1 justify-start align-middle">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="lucide lucide-circle h-4 w-4 inline-block"
+                                >
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                ভিডিওটির লিংক আমাদের সাপোর্ট এ দিন।
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-card text-card-foreground shadow p-6 bg-white">
+                    <div class="space-y-4">
+                        <div class="text-lg font-semibold">যেভাবে রেফার করে কয়েন পাবেন।</div>
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="font-bold">১।</div>
+                                <div class="text-sm">আমাদের ওয়েবসাইটের রেফারেল লিংক কপি করুন।</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="font-bold">২।</div>
+                                <div class="text-sm">রেফার লিংক দিয়ে আপনাদের বন্ধুদের একাউন্ট খুলে দিন।</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="font-bold">৩।</div>
+                                <div class="text-sm">আপনার বন্ধুরা ডায়মন্ড কিনে সেখান থেকে আপনি কয়েন পাবেন।</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="font-bold">৪।</div>
+                                <div class="text-sm">রেফার করা কয়েন দিয়ে আপনি চাইলে ফ্রিতে ডায়মন্ড নিতে পারবেন।</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rounded-xl border bg-card text-card-foreground shadow bg-white">
+                    <div class="space-y-1.5 p-6 flex justify-between flex-row items-center"><h3 class="font-semibold leading-none tracking-tight">Recent Referral Earnings</h3></div>
+                    <div class="p-6 pt-0 overflow-hidden">
+                        <div class="flex items-center py-4 gap-2"></div>
+                        <div class="rounded-md border">
+                            <div class="relative w-full overflow-auto">
+                                <table class="w-full caption-bottom text-sm">
+                                    <tbody class="[&amp;_tr:last-child]:border-0">
+                                        @each((u, index) in refer)
+                                        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted" data-state="false">
+                                            <div class="flex items-center justify-between p-4 hover:bg-gray-100 cursor-pointer">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                                                        <img class="aspect-square h-full w-full" src="https://lh3.googleusercontent.com/a/ACg8ocKqNrlOMC2E0sNkc5MPp_1Ybz2Tu3u-ksaLJ_t7Ft89C0ryBHdX=s96-c" />
+                                                    </span>
+                                                    <div>
+                                                        <div class="text-sm font-semibold">{{ u.user.fullName }}</div>
+                                                        {{--  <div class="text-xs text-muted-foreground">{{  }}</div>  --}}
+                                                    </div>
+                                                </div>
+                                                <div class="text-sm text-muted-foreground">{{ u.purpass }}</div>
+                                                <div class="text-sm font-semibold">{{ u.coin  }} coins</div>
+                                            </div>
+                                        </tr>
+                                        @end
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @if(refer.length>0)
+                            <div class="wl-flex wl-p">
+                                <p>Showing {{ refer.currentPage }} Page of {{ Math.floor(refer.total/refer.perPage) }} Pages</p>
+                                <ul class="pagination">
+                                @if (refer.getPreviousPageUrl && refer.getPreviousPageUrl() != null)
+                                    <li class="paginate_button page-item">
+                                    <a class="page-link" href="/refer{{ refer.getPreviousPageUrl() }}">
+                                        Previous
+                                    </a>
+                                    </li>
+                                    @else
+                        
+                                    <li class="paginate_button page-item">
+                                    <p style="cursor: not-allowed !important;" class="page-link">
+                                        Previous
+                                    </p>
+                                    </li>
+                                @endif
+                        
+                                @each (pageNumber in [refer.currentPage - 2, refer.currentPage - 1, refer.currentPage, refer.currentPage + 1, refer.currentPage + 2])
+                                    @if (pageNumber >= 1 && pageNumber <= refer.lastPage)
+                                    <li class="paginate_button page-item  {{pageNumber === refer.currentPage ? 'active' : ''}}">
+                                        <a class="page-link" href="/refer/?page={{ pageNumber }}">
+                                        {{ pageNumber }}
+                                        </a>
+                                    </li>
+                                    @endif
+                                @end
+                        
+                                @if (refer.getNextPageUrl && refer.getNextPageUrl() != null)
+                                    <li class="paginate_button page-item">
+                                    <a class="page-link" href="/refer{{ refer.getNextPageUrl() }}">
+                                        Next
+                                    </a>
+                                    </li>
+                        
+                                @else
+                        
+                                <li class="paginate_button page-item">
+                                    <p style="cursor: not-allowed !important;" class="page-link">
+                                    Next
+                                    </p>
+                                </li>
+                        
+                                @endif
+                                </ul>
+                            </div>
+                            </div>
+                            @end
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+@slot('script')
+    <script>
+        function copyText() {
+            var copyText = document.getElementById("myInput");
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+            toastr["success"]("Copy")
+        }
+    </script>
+@endslot
+@end
+

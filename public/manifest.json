@@ -1,0 +1,20 @@
+{
+    "name":"demo",
+    "short_name":"demo",
+    "description":"dem",
+    "start_url":"\/","id":"\/",
+    "display":"standalone",
+    "theme_color":"#6400e8",
+    "background_color":"#ffffff",
+    "orientation":"any",
+    "status_bar":"black",
+    "icons":[
+        {
+            
+            "type":"image\/png",
+            "sizes":"512x512",
+            "purpose":"any"
+        }
+    ]
+}
+

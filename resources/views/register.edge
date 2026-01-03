@@ -1,0 +1,79 @@
+@layout.fapp({ title: "Welcome page title" })
+<div class="mx-auto bg-white my-12 p-5 rounded-lg shadow-lg" style="max-width:400px;">
+	<div class="text-center">
+		<h2 class="text-3xl">Register</h2>
+		
+			<a class="border border-opacity-20 border-secondary flex p-2 mt-2 w-60 mx-auto" href="{{ route('social.google') }}"> 
+				<svg xmlns="http://www.w3.org/2000/svg" class="mx-auto" height="1.5em" viewBox="10 0 256 262">
+					<path fill="#4285f4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
+					<path fill="#34a853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
+					<path fill="#fbbc05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"></path>
+					<path fill="#eb4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
+				</svg> 
+				<p>Continue with Google</p>
+			</a>
+
+			<div class="flex justify-between items-center pt-5">
+				<hr class="w-1/5 px-2 opacity-20 text-secondary">
+				Or sign up with credentials
+				<hr class="w-1/5 px-2 opacity-20 text-secondary">
+			</div>
+
+			@if (flashMessages.get('form'))
+				<ul style="color: red;">
+					@each((error) in flashMessages.get('form'))
+					<li>{{ error.message }}</li>
+					@endeach
+				</ul>
+			@endif
+			<form method="POST" action="{{ route('register') }}" class="p-5 text-left">
+				{{ csrfField() }}
+				<div class="py-2">
+					<label class="font-primary font-bold">Full Name</label>
+					<input type="text" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2" id="username" value="" name="fullName" required="" placeholder="Full Name" autocomplete="off">
+					<span id="username-alert"></span>
+				</div>
+				<div class="py-2">
+					<label class="font-primary font-bold">Email</label>
+					<input type="email" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2" id="email" value="" name="email" required="" placeholder="Email Address" autocomplete="off">
+					<span id="email-alert"></span>
+				</div>
+				<div class="py-2">
+					<label class="font-primary font-bold">Number</label>
+					<input type="number" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2" id="phone" value="" name="phone" required="" placeholder="Phone Number" autocomplete="off">
+					<span id="phone-alert"></span>
+				</div>
+				<div class="py-2">
+					<label class="font-primary font-bold">Password</label>
+					<input type="password" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2" id="password" value="" name="password" required="" placeholder="Password" autocomplete="off">
+					<span id="password-alert"></span>
+				</div>
+				<div class="py-2">
+					<label class="font-primary font-bold">Confirm Password</label>
+					<input type="password" class="w-full rounded-md placeholder-gray-400 text-sm px-2.5 py-2.5 shadow-sm ring-1 focus:ring-2" id="confirm_password" value="" name="password_confirmation" required="" placeholder="Confirm password" autocomplete="off">
+					<span id="confirm_password-alert"></span>
+				</div>
+				<input type="hidden" name="ref" value="{{ queryParams.ref }}">
+				<div class="form-group">
+					<div class="component_checkbox">
+						<div class="form-group__checkbox m-t-8">
+							<label class="form-group__checkbox-label">
+								<input type="checkbox" name="terms" value="1" id="terms" checked="" required="">
+								<span class="checkmark"></span>
+							</label>
+							<label class="form-group__label-title" for="terms" style="display: inline;">
+								I have read and agreed with
+								<a href="/terms" target="_blank" class="sign-up-center-terms-link">
+									Terms of Service</a>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="mt-2">
+					<button type="submit" class="bg-primary hover:bg-danger text-white font-bold py-2 px-4 border border-primary rounded">REGISTER</button>
+				</div>
+			</form>
+		<div class="text-center">Already have an account? <a href="/login?ref={{ queryParams.ref }}" class="text-secondary">Login</a></div>
+	</div>
+</div>
+@end
