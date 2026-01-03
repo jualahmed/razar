@@ -30,11 +30,8 @@ export const ConfirmPasswordValidator = vine.compile(
 export const createProductValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(4),
-    sale_price: vine.number(),
-    saletype: vine.number(),
-    buy_price: vine.number(),
-    lavel: vine.number(),
-    category_id: vine.number(),
+   slug: vine.string().trim().minLength(4),
+    description: vine.string().trim().escape().minLength(12),
   })
 )
 
@@ -44,15 +41,5 @@ export const updateProductValidator = vine.compile(
     name: vine.string().trim().minLength(4),
     slug: vine.string().trim().minLength(4),
     description: vine.string().trim().escape().minLength(12),
-    link: vine.string().trim(),
-    sale_price: vine.number(),
-    saletype: vine.number(),
-    uid_check: vine.number(),
-    notify: vine.number(),
-    category_id: vine.number(),
-    buy_price: vine.number(),
-    quantity: vine.number(),
-    lavel: vine.number(),
-    is_active: vine.number(),
   })
 )

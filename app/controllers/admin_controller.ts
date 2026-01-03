@@ -7,7 +7,6 @@ import { DateTime } from 'luxon'
 import Order from '#models/order'
 import db from '@adonisjs/lucid/services/db'
 import Package from '#models/package'
-import Account from '#models/account'
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
@@ -294,11 +293,6 @@ export default class AdminController {
 		if (auth.user?.id == Number(params.id)) {
 			session.flash('succes', 'You cannot selete your own account')
 			return response.redirect().back()
-		}
-		const product = await User.find(params.id);
-		if(product){
-			product.delete()
-			await Account.query().where('user_id',product.id).delete()
 		}
 		return response.redirect().withQs().back()
 	}

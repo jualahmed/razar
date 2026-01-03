@@ -48,14 +48,10 @@
         aria-describedby="stored_data_table_info">
         <thead>
           <tr role="row">
+            <th>S.L</th>
             <th>ID</th>
-            <th>Logo</th>
-            <th>Name</th>
-            <th>Buy Price</th>
-            <th>Sale Price</th>
-            <th>Stock</th>
-            <th>Date</th>
-            <th>Status</th>
+            <th>Password</th>
+            <th>Key</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -63,19 +59,10 @@
 			@each((u, index) in data)
 				<tr class="odd">
 					<td>{{ u.id }}</td>
-					<td><img src="/uploads/{{ u.logo }}" alt="" width="50px" height="50px"></td>
 					<td>{{ u.name }}</td>
-					<td>{{ u.buy_price }} </td>
-					<td>{{ u.sale_price }} </td>
-					<td>{{ u.quantity }} </td>
-					<td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
-					<td>
-					@if(u.is_active==1)
-						<a href="#" class="btn btn-xs btn-primary">Active</a>
-					@else
-						<a  href="#"  class="btn btn-xs btn-danger">Inactive</a>
-					@end
-					</td>
+					<td>{{ u.slug }} </td>
+					<td>{{ u.description }} </td>
+				
 					<td>
 					<div class="btn-group">
 						<a href="/admin/product/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">

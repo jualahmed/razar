@@ -23,38 +23,14 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/admin/category" class="nav-link {{ request.request.url.startsWith('/admin/category') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tags"></i>
-                        <p>Category</p>
-                    </a>
-                </li>
+        
                 <li class="nav-item">
                     <a href="/admin/product" class="nav-link {{ request.request.url.startsWith('/admin/product') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box"></i>
-                        <p>Product</p>
+                        <p>Account</p>
                     </a>
                 </li>
 
-                @if(hide_withdrow!=1)
-                    <li class="nav-item ">
-                        <a href="/admin/match" class="nav-link {{ request.request.url.startsWith('/admin/match') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-truck"></i>
-                            <p>
-                                Match
-                            </p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item ">
-                        <a href="/admin/pushnotify" class="nav-link {{ request.request.url.startsWith('/admin/pushnotify') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-bell"></i>
-                            <p>
-                                Push Notification
-                            </p>
-                        </a>
-                    </li>
-                @endif
 
                 <li class="nav-item">
                     <a href="/admin/package" class="nav-link {{ request.request.url.startsWith('/admin/package') ? 'active' : '' }}">
@@ -72,51 +48,20 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                  <a href="/admin/banar" class="nav-link {{ request.request.url.startsWith('/admin/banar') ? 'active' : '' }}">
-                      <i class="nav-icon fas fa-image"></i>
-                      <p>Banner</p>
-                  </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/admin/shelltype" class="nav-link {{ request.request.url.startsWith('/admin/shelltype') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-image"></i>
-                        <p>Shell Type</p>
-                    </a>
-                </li>
-
+               
               <li class="nav-item">
                 <a href="/admin/orders" class="nav-link {{ request.request.url.startsWith('/admin/orders') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-shopping-cart"></i>
                     <p>Order</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="/admin/transaction" class="nav-link {{ request.request.url.startsWith('/admin/transaction') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-wallet"></i>
-                    <p>Add Money</p>
-                </a>
-            </li>
+          
             <li class="nav-item">
                 <a href="/admin/setting" class="nav-link {{ request.request.url.startsWith('/admin/setting') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-cog"></i>
                     <p>Site Settings</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="/admin/comment" class="nav-link {{ request.request.url.startsWith('/admin/comment') ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-comments"></i>
-                    <p>Comments</p>
-                </a>
-            </li>
-
-                <li class="nav-item">
-                    <a href="/admin/autoserver" class="nav-link {{ request.request.url.startsWith('/admin/autoserver') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-server"></i>
-                        <p>Server List</p>
-                    </a>
-                </li>
 
                 <li class="nav-item">
                     <a href="{{ route('admin.users.index') }}" class="nav-link {{ request.request.url.startsWith('/admin/users') ? 'active' : '' }}">
@@ -124,20 +69,6 @@
                         <p>
                             Users
                         </p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/admin/video" class="nav-link {{ request.request.url.startsWith('/admin/video') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Video</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/admin/color" class="nav-link {{ request.request.url.startsWith('/admin/color') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file-alt"></i>
-                        <p>Site color</p>
                     </a>
                 </li>
             </ul>

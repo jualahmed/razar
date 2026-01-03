@@ -10,8 +10,6 @@
 
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
-import './telegram.js';
-import './telegramUserBot.js';
 /**
  * The error handler is used to convert an exception
  * to a HTTP response.

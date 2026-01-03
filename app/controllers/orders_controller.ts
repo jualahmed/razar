@@ -7,12 +7,6 @@ import env from '#start/env'
 import axios from "axios";
 import Product from '#models/product';
 import { DateTime } from 'luxon'
-import Comment from '#models/comment';
-import Coin from '#models/coin'
-import AutoServer from '#models/auto_server';
-import Shelltype from '#models/shelltype'
-import { bot } from '#start/telegram'
-import { getTelegramClient } from '#start/telegramUserBot'
 export default class OrdersController {
 
     queryParamsToString(queryParams:any) {
@@ -105,10 +99,8 @@ export default class OrdersController {
             totalSalePrice += order.sale_price;
         });
 
-        const prod = await Comment.all();
         return view.render('admin/orders/index.edge', {
             data: product,
-            prod: prod,
             query: data,
             totalBuyPrice: totalBuyPrice,
             totalSalePrice: totalSalePrice

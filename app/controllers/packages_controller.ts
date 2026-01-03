@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Package from '#models/package'
 import Product from '#models/product'
 import { createPackageValidator,updatePackageValidator } from '#validators/package'
-import Shelltype from '#models/shelltype'
 export default class PackagesController {
     async index({view,request}: HttpContext) {
 		const page = request.input('page', 1)

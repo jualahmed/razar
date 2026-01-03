@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo,hasMany  } from '@adonisjs/lucid/orm'
-import Comment from '#models/comment'
 import User from '#models/user'
 import Digicode from '#models/digicode'
 import type { BelongsTo,HasMany } from '@adonisjs/lucid/types/relations'
@@ -68,9 +67,6 @@ export default class Order extends BaseModel {
     serialize: (value) => value.toFormat('yyyy-LL-dd h:m:s')
   })
   declare updatedAt: DateTime
-
-  @belongsTo(() => Comment,{foreignKey: 'comment_id'})
-  declare comment: BelongsTo<typeof Comment>
 
   @belongsTo(() => User,{foreignKey: 'user_id'})
   declare user: BelongsTo<typeof User>

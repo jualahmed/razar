@@ -57,98 +57,21 @@
 				<div class="row">
 
 					<div class="form-group col-sm-3">
-						<label for="name">name</label>
-						<input type="text" class="form-control" name="name" value="{{ product.name }}"  placeholder="Enter name" required="" />
+						<label for="name">ID</label>
+						<input type="text" class="form-control" name="name" value="{{ product.name }}"  placeholder="Enter ID" required="" />
 					</div>
 
 					<div class="form-group col-sm-3">
-						<label for="slug">slug</label>
-						<input type="text" class="form-control" name="slug" value="{{ product.slug }}" placeholder="Enter slug" required="" />
-					</div>
-
-
-					<div class="form-group col-sm-3">
-						<label for="link">Tutorial link</label>
-						<input type="text" class="form-control" name="link"  value="{{ product.link }}" placeholder="Enter link" required="" />
+						<label for="slug">Password</label>
+						<input type="text" class="form-control" name="slug" value="{{ product.slug }}" placeholder="Enter Password" required="" />
 					</div>
 
 					<div class="form-group col-sm-3">
-						<label for="logo">logo</label>
-						<input type="file" class="form-control" name="logo" />
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="buy_price">buy_price</label>
-						<input type="text" class="form-control" name="buy_price" value="{{ product.buy_price }}" placeholder="Enter buy_price" required="" />
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="sale_price">sale_price</label>
-						<input type="text" class="form-control" name="sale_price" value="{{ product.sale_price }}" placeholder="Enter sale_price" required="" />
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="quantity">quantity</label>
-						<input type="text" class="form-control" name="quantity" value="{{ product.quantity }}" placeholder="Enter quantity" required="" />
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="lavel">lavel</label>
-						<input type="text" class="form-control" name="lavel" value="{{ product.lavel }}" placeholder="Enter lavel" required="" />
-					</div>
-					
-					<div class="form-group col-sm-3">
-						<label for="is_active">Status</label>
-						<select class="form-control" name="is_active" required>
-							<option value="1" {{ product.is_active == 1 ? 'selected' : '' }}>Active</option>
-							<option value="0" {{ product.is_active == 0 ? 'selected' : '' }}>Not Active</option>
-						</select>
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="notify">Notify</label>
-						<select class="form-control" name="notify" required>
-							<option value="1" {{ product.notify == 1 ? 'selected' : '' }}>Active</option>
-							<option value="0" {{ product.notify == 0 ? 'selected' : '' }}>Not Active</option>
-							<option value="2" {{ product.notify == 2 ? 'selected' : '' }}>TG</option>
-						</select>
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="uid_check">UID Check</label>
-						<select class="form-control" name="uid_check" required>
-							<option value="1" {{ product.uid_check == 1 ? 'selected' : '' }}>Active</option>
-							<option value="0" {{ product.uid_check == 0 ? 'selected' : '' }}>Not Active</option>
-						</select>
+						<label for="description">Kye</label>
+						<input type="text" class="form-control" name="description" value="{{ product.description }}" placeholder="Enter Kye" required="" />
 					</div>
 
 
-					<div class="form-group col-sm-3">
-						<label for="info">Sale type </label>
-						<select class="form-control" name="saletype" required>
-							<option value="" disabled {{ !flashMessages.get('old.info') ? 'selected' : '' }}>Select a Sale Type</option>
-							<option value="1" {{ product.saletype == 1 ? 'selected' : '' }}>Resale</option>
-							<option value="2" {{ product.saletype == 2 ? 'selected' : '' }}>Genaral Sale</option>
-							<option value="3" {{ product.saletype == 3 ? 'selected' : '' }}>Coin Sale</option>
-							<option value="4" {{ product.saletype == 4 ? 'selected' : '' }}>Match Product</option>
-							<option value="5" {{ product.saletype == 5 ? 'selected' : '' }}>Free Fire Like</option>
-						</select>
-					</div>
-
-					<div class="form-group col-sm-3">
-						<label for="category">Category</label>
-						<select class="form-control" name="category_id" required>
-							<option value="" disabled {{ !flashMessages.get('old.category') ? 'selected' : '' }}>Select a Category</option>
-							@each((category, index) in categories)
-								<option value="{{ category.id }}" {{ product.category_id == category.id ? 'selected' : '' }}>{{ category.name }}</option>
-							@endeach
-						</select>
-					</div>
-
-
-					<textarea id="editor1" name="description"  rows="10" cols="80">
-						{{{ product.description }}}
-					</textarea>
 				</div>
 			</div>
 			<div class="card-footer">
@@ -156,107 +79,6 @@
 			</div>
 		</form>
 
-		<form 
-			action="{{ route('admin.product.addfield', { id: product.id }) }}" 
-			method="POST" 
-			accept-charset="utf-8">
-			{{ csrfField() }}
-
-			<div class="form-group col-sm-3">
-				<label for="name">Hidden Name</label>
-				<input type="text" class="form-control" name="name"  value="" placeholder="Enter Hidden Name" required="" />
-			</div>
-
-			<div class="form-group col-sm-3">
-				<label for="value">Name To Show User</label>
-				<input type="text" class="form-control" name="value"  value="" placeholder="Enter Name To Show User" required="" />
-			</div>
-
-			<div class="card-footer">
-				<button type="submit" id="form_submit" class="btn btn-success">Add</button>
-			</div>
-		</form>
-
-		<table class="table p-2">
-			<thead>
-				<tr>
-					<th>Hidden Name</th>
-					<th>Name To Show User</th>
-					<th>action</th>
-				</tr>
-			</thead>
-			<tbody>
-				@each((field, index) in JSON.parse(product.info))
-					<tr>
-						<td>{{ field.name }}</td>
-						<td>{{ field.value }}</td>
-						<td>
-							<form 
-								action="{{ route('admin.product.deletefield', { id: product.id, field_id: field.id }) }}" 
-								method="POST" 
-								accept-charset="utf-8">
-								{{ csrfField() }}
-								<button type="submit" id="form_submit" class="btn btn-danger">Delete</button>
-							</form>
-						</td>
-					</tr>
-				@endeach
-			</tbody>
-		</table>
-
-		<br>
-		<br>
-		<br>
-
-		<a href="/admin/package/create/?p_id={{ product.id }}" class="btn btn-success"> Add new package </a>
-		<div class="table-responsive">
-			<table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
-			  aria-describedby="stored_data_table_info">
-			  <thead>
-				<tr role="row">
-				  <th>Name</th>
-				  <th>Product Name</th>
-				  <th>Buy Price</th>
-				  <th>Sale Price</th>
-				  <th>Stock</th>
-				  <th>Date</th>
-				  <th>Action</th>
-				</tr>
-			  </thead>
-			  <tbody>
-				  @each((u, index) in packages)
-					  <tr class="odd">
-						  <td>{{ u.name }}</td>
-						  <td>
-							  @if(u.product)
-								  <p> {{ u.product.name }} </p>
-							  @end
-						  </td>
-						  <td>{{ u.buy_price }} </td>
-						  <td>{{ u.sale_price }} </td>
-						  <td>{{ u.stock }} </td>
-						  <td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
-						  <td>
-							  <div class="btn-group">
-								  <a href="/admin/package/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
-								  <i class="fas fa-edit"></i>
-								  </a>
-								  <form onSubmit="return confirm('Do you want to submit?')"
-									  action="{{ route('admin.package.show', { id: u.id }, { qs: { _method: 'DELETE' }} ) }}"
-									  method="get"
-								  >
-								  {{ csrfField() }}
-									  <button class="btn btn-danger" title="Move to Trash" type="submit">
-									  <i class="fas fa-trash"></i>
-								  </button>
-								  </form>
-							  </div>
-						  </td>
-					  </tr>
-				  @end
-			  </tbody>
-			</table>
-		</div>
 </section>
 </div>
 @end
