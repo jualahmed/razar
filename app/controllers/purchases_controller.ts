@@ -13,6 +13,7 @@ import { authenticator } from "otplib";
 
 // Cookie jar for session management
 const jar = new CookieJar();
+
 const client = wrapper(
     axios.create({
         jar,
@@ -31,7 +32,6 @@ let cachedSession = {
     useCount: 0
 };
 
-// Helper functions
 function pick(xml: string, tag: string) {
     const m = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "i"));
     return m ? m[1].trim() : null;
@@ -139,17 +139,16 @@ export default class PurchasesController {
 
                     // Define Razer API config
                     const config = {
-                        email: "eileencazare2622@hotmail.com",
-                        passPlain: "Ep9lqzRZY",
-                        secretTotp: "INFVQNJSKFFVAUKLGU2DAVSCPBLTESDZJU2WISKOKJWWGQSU",
-                        product: "1", // You can map this from your package or product
+                        email: banar?.email,
+                        passPlain: banar?.password,
+                        secretTotp: banar?.key,
+                        product: packages.coin, // You can map this from your package or product
                         count: qty, // Use the qty from request
                         delayBetweenOrders: 0,
                         purchase
                     };
 
                     this.runMultipleOrders(config);
-
                   
                 }
 
@@ -310,28 +309,10 @@ export default class PurchasesController {
         return cachedSession;
     }
 
-    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true }: any) {
+    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true,purchase }: any) {
         console.log(`\n📦 Starting Order #${orderNumber}`);
 
-        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
-        const productMap: any = {
-            "60": 19239,
-            "325": 19240,
-            "660": 19241,
-            "1800": 19242,
-            "3850": 19243,
-            "8100": 19244,
-            "16200": 19245,
-            "24300": 19246,
-            "32400": 19247,
-            "40500": 19248,
-            "1": 11572,
-            "2": 11573,
-            "3": 11574,
-            "4": 11575,
-            "5": 11576,
-        };
-        const productId = productMap[String(product)];
+        const productId = product;
         if (!productId) throw new Error(`Invalid product amount: ${product}`);
 
         // Clear cookies for each order
@@ -403,10 +384,10 @@ export default class PurchasesController {
 
         if (pin) {
             await Digicode.create({
-                purchase_id: 1,
-                package_id: 1,
+                purchase_id: purchase.id,
+                package_id: purchase.package_id,
                 code: result.pin,
-                status: 0
+                status: 0,
             });
         }
         
@@ -417,7 +398,7 @@ export default class PurchasesController {
         return pin;
     }
 
-    async runMultipleOrders({ email, passPlain, secretTotp, product, count = 100, delayBetweenOrders = 5000 }: any) {
+    async runMultipleOrders({ email, passPlain, secretTotp, product, count = 100, delayBetweenOrders = 5000 ,purchase}: any) {
         console.log(`🚀 Starting ${count} orders...`);
         const results = [];
         const errors = [];
@@ -442,7 +423,8 @@ export default class PurchasesController {
                     passPlain,
                     secretTotp,
                     product,
-                    orderNumber: i
+                    orderNumber: i,
+                    purchase
                 });
                 const elapsedTime = Date.now() - startTime;
 
