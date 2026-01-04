@@ -4,7 +4,14 @@ import axios from 'axios';
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 import CryptoJS from "crypto-js";
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import env from '#start/env'
+
+const proxyAgent = new HttpsProxyAgent(env.get('PROXY') || ''); 
+
 const jar = new CookieJar();
+
+const cookieJar = new CookieJar();
 
 const client = wrapper(
     axios.create({
@@ -14,6 +21,19 @@ const client = wrapper(
         validateStatus: () => true,
     })
 );
+
+const defaultOptions:any = {
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Priority': 'high'
+    }
+};
+
+defaultOptions.httpsAgent = proxyAgent
+
 
 function pick(xml: string, tag: string) {
     const m = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "i"));
@@ -177,16 +197,21 @@ export default class BanarsController {
         const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
 
         const loginRes = await runStep("COP_LOGIN", async () => {
-            const res = await client.post(
+            
+	    const requestOptions:any = { ...defaultOptions };
+
+            const cookies = await cookieJar.getCookieString('https://razerid.razer.com/api/emily/7/login/get');
+                if (cookies) {
+                    requestOptions.headers= {
+                        ...requestOptions.headers,
+                        'Cookie': cookies
+                    };
+                }
+
+            const res = await axios.post(
                 "https://razerid.razer.com/api/emily/7/login/get",
                 { data: xml, encryptedPw: "rev1", clientId },
-                {
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json, text/plain, */*",
-                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
-                    },
-                }
+                requestOptions
             );
             console.log("❓ COP_LOGIN response:", short(res.data));
             const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
