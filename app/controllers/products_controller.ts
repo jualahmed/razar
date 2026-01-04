@@ -23,7 +23,6 @@ export default class ProductsController {
 
 			let input:any = await this.convertRazerGoldUrlToApi(payload.link);
 			let slug = await this.getslug(payload.link);
-			console.log("API URL:", input);
 			const responsea = await axios.get(input,
 			{
 				headers: {
@@ -35,24 +34,22 @@ export default class ProductsController {
 			}
 			);
 
-			console.log(responsea.data);
-
 			data.link=payload.link;
 			await data.save()
 
 			responsea.data.gameSkus.forEach(async (element: any) => {
-					let exiting = await Package.query().where('coin',element.productId).first()
-					if(exiting){
-						return;
-					}
-					let pac  = new Package();
-					pac.name=element.vanityName;
-					pac.product_id=data.id;
-					pac.tag_line=slug;
-					pac.sale_price=element.pricings[0].unitPrice;
-					pac.buy_price=element.amountInRzSilver;
-					pac.coin=element.productId;
-					await pac.save()
+				let exiting = await Package.query().where('coin',element.productId).first()
+				if(exiting){
+					return;
+				}
+				let pac  = new Package();
+				pac.name=element.vanityName;
+				pac.product_id=data.id;
+				pac.tag_line=slug;
+				pac.sale_price=element.pricings[0].unitPrice;
+				pac.buy_price=element.amountInRzSilver;
+				pac.coin=element.productId;
+				await pac.save()
 			});
 
 			session.flash('success', "SuccessFully Created")

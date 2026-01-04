@@ -188,6 +188,7 @@ export default class BanarsController {
                     },
                 }
             );
+            console.log("❓ COP_LOGIN response:", short(res.data));
             const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
             const parsed = parseRazerCopLoginXml(loginXml);
             if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
