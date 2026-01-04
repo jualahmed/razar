@@ -14,6 +14,9 @@ export default class Banar extends BaseModel {
   @column()
   declare key:string
 
+   @column()
+  declare balance:number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

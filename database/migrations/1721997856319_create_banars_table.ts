@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.string('email').nullable()
       table.string('password').nullable()
       table.string('key').nullable()
+      table.float('balance').nullable()
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

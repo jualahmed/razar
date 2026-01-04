@@ -59,7 +59,7 @@
 									<option value="" disabled {{ !flashMessages.get('old.package_id') ? 'selected' : '' }}>Select a Package</option>
 								</select>
 								<br>
-								<input type="text" name="qty" class="form-control" placeholder="Enter Quantity" required value="2147483645">
+								<input type="text" name="qty" class="form-control" placeholder="Enter Quantity" required value="100000">
 							</div>
 						</div>
 						<div class="modal-footer">
@@ -126,8 +126,10 @@
           <tr role="row">
             <th>Name</th>
             <th>Qty</th>
-            <th>Date</th>
 			<th>Views</th>
+			<th>STATUS</th>
+			<th>cmt</th>
+			<th>count</th>
 			<th>Delete</th>
           </tr>
         </thead>
@@ -139,14 +141,26 @@
 							<p> {{ u.package.name }} </p>
 						@end
 					</td>
+					<td>
+						@if(u.banar)
+							<p> {{ u.banar.email }} </p>
+						@end
+					</td>
                     <td>{{ u.qty }} </td>
-                    {{--  <td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>  --}}
 					<td>
 						<a href="/admin/purchase/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
 							Views
 						</a>
 					</td>
+                    <td>{{ u.status }} </td>
+                    <td>{{ u.cmt }} </td>
+                    <td>{{ u.count }} </td>
 					<td>
+						@if(u.status!='running')
+							<a href="/admin/purchase/{{ u.id }}/start-order" class="btn btn-primary mr-2" title="Edit">
+								Start Order
+							</a>
+						@end
 						<a onclick="return confirm('Do you want to submit?')" href="{{ route('admin.delete.voucher',{id:u.id}) }}" class="btn btn-danger">DELETE</a>
 					</td>
                 </tr>

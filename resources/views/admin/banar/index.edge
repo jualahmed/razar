@@ -52,6 +52,7 @@
             <th>email</th>
             <th>Password</th>
             <th>Key</th>
+            <th>balance</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -62,9 +63,13 @@
 					<td>{{ u.email }}</td>
 					<td>{{ u.password }} </td>
 					<td>{{ u.key }} </td>
+					<td>{{ u.balance }} </td>
 				
 					<td>
 					<div class="btn-group">
+						<a href="/admin/banar/{{ u.id }}/updatebalance" class="btn btn-primary mr-2" title="balance">
+                            update balance
+                        </a>
 						<a href="/admin/banar/{{ u.id }}/edit" class="btn btn-primary mr-2" title="Edit">
 						<i class="fas fa-edit"></i>
 						</a>

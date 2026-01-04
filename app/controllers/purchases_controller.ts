@@ -98,11 +98,15 @@ async function getRazerTOTP(secret: string) {
     return authenticator.generate(secret);
 }
 
+function wait(ms:any) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default class PurchasesController {
     async index({ view, request }: HttpContext) {
         const page = request.input('page', 1)
         const limit = 10
-        const product = await Purchase.query().preload('package').orderBy('id', 'desc').paginate(page, limit);
+        const product = await Purchase.query().preload('package').preload('banar').orderBy('id', 'desc').paginate(page, limit);
         const prod = await Product.all();
         const brand = await Banar.all();
         return view.render('admin/purchase/index.edge', { data: product, prod: prod, brand: brand })
@@ -135,6 +139,9 @@ export default class PurchasesController {
                     const purchase = await Purchase.create({
                         package_id: packages.id,
                         qty,
+                        status:'running',
+                        count:0,
+                        account_id:account_id,
                     });
 
                     // Define Razer API config
@@ -145,7 +152,8 @@ export default class PurchasesController {
                         product: packages.coin, // You can map this from your package or product
                         count: qty, // Use the qty from request
                         delayBetweenOrders: 0,
-                        purchase
+                        purchase,
+                        packages
                     };
 
                     this.runMultipleOrders(config);
@@ -185,22 +193,83 @@ export default class PurchasesController {
         return response.redirect('back')
     }
 
-    // Razer API Methods
-    async getAccountSummary(accessToken: string, uuid: string) {
+    // In PurchasesController
+    async startOrder({ params, response }: HttpContext) {
         try {
-            const res = await axios.get("https://gold.razer.com/api/gold/accountsummary", {
-                headers: {
-                    "accept": "application/json, text/plain, */*",
-                    "x-razer-accesstoken": accessToken,
-                    "x-razer-fpid": '16f47c6af38e40251246e9f19a73f501',
-                    "x-razer-razerid": uuid,
-                    "referer": "https://gold.razer.com/global/en/account/summary",
-                },
+            const purchase = await Purchase.find(params.id);
+            if (!purchase) {
+                return response.status(404).json({ 
+                    success: false, 
+                    message: 'Purchase not found' 
+                });
+            }
+
+            purchase.count=0;
+            purchase.status = 'running';
+            await purchase.save();
+            
+            // Get package and account details
+            const packages = await Package.find(purchase.package_id);
+            const brand = await Banar.find(purchase.account_id); // Assuming you store account_id
+            
+            if (!packages) {
+                throw new Error('Package not found');
+            }
+            
+            // Define Razer API config
+            // Note: You should store credentials in Banar model or separate config
+            const config = {
+                email: brand?.email ,
+                passPlain: brand?.password ,
+                secretTotp: brand?.key ,
+                product: packages.coin,
+                count: purchase.qty, // Use the qty from request
+                delayBetweenOrders: 0,
+                purchase,
+                packages
+            };
+            
+            // Run orders in background (consider using a queue for better performance)
+            this.runMultipleOrders(config).then(async (orderResults) => {
+                // Update purchase status based on results
+                if (orderResults.errors.length === 0) {
+                    purchase.status = 'completed';
+                } else if (orderResults.results.length > 0) {
+                    purchase.status = 'partially_completed';
+                } else {
+                    purchase.status = 'failed';
+                }
+                
+                // Save digicodes
+                if (orderResults.results && orderResults.results.length > 0) {
+                    for (const result of orderResults.results) {
+                        if (result.pin) {
+                            await Digicode.create({
+                                purchase_id: purchase.id,
+                                package_id: packages.id,
+                                code: result.pin,
+                                status: 0
+                            });
+                        }
+                    }
+                }
+                
+                await purchase.save();
+            }).catch(async (error) => {
+                console.error('Order processing error:', error);
+                purchase.status = 'failed';
+                purchase.cmt = error.message;
+                await purchase.save();
             });
-            return res.data;
-        } catch (err: any) {
-            console.error("❌ Failed to fetch account summary:", err.message);
-            return null;
+            
+            return response.redirect('back');
+            
+        } catch (error) {
+            console.error(error);
+            return response.status(500).json({ 
+                success: false, 
+                message: 'An error occurred while starting the order process' 
+            });
         }
     }
 
@@ -210,7 +279,7 @@ export default class PurchasesController {
         const serviceCode = "0770";
         const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
         const difTime = 0;
-
+        await wait(2000); 
         // Clear cookies
         try { jar.removeAllCookiesSync(); } catch (e) { }
 
@@ -235,8 +304,8 @@ export default class PurchasesController {
         });
 
         const { parsed } = loginRes;
-        let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
-        console.log('Account Summary during session creation:', accountSummary);
+        // let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
+        // console.log('Account Summary during session creation:', accountSummary);
 
         await runStep("LOGIN_SSO", async () => {
             const ssoBody = qs.stringify({
@@ -309,7 +378,7 @@ export default class PurchasesController {
         return cachedSession;
     }
 
-    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true,purchase }: any) {
+    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true,purchase ,packages}: any) {
         console.log(`\n📦 Starting Order #${orderNumber}`);
 
         const productId = product;
@@ -343,7 +412,7 @@ export default class PurchasesController {
                 regionId: 2,
                 paymentChannelId: 1,
                 emailIsRequired: true,
-                permalink: "freefire-pins",
+                permalink: packages.tag_line,
                 otpToken: session.otpTokenEnc,  // Use cached otp_token_enc
                 savePurchaseDetails: true,
                 personalizedInfo: [],
@@ -398,7 +467,7 @@ export default class PurchasesController {
         return pin;
     }
 
-    async runMultipleOrders({ email, passPlain, secretTotp, product, count = 100, delayBetweenOrders = 5000 ,purchase}: any) {
+    async runMultipleOrders({ email, passPlain, secretTotp, product, count = 100, delayBetweenOrders = 5000 ,purchase,packages}: any) {
         console.log(`🚀 Starting ${count} orders...`);
         const results = [];
         const errors = [];
@@ -413,6 +482,20 @@ export default class PurchasesController {
         };
 
         for (let i = 1; i <= count; i++) {
+            // let summary = await this.accsummary({ email, passPlain});
+            // let acc = await Banar.find(purchase.account_id);
+            // if(acc){
+            //     acc.balance = summary ? summary.totalGold : 0;
+            //     await acc.save();
+            // }
+            // if(summary && packages.sale_price>summary.totalGold){
+            //     packages.cmt= `Insufficient balance for Order #${i}. Required: ${packages.sale_price}, Available: ${summary.totalGold}`;
+            //     await packages.save();
+            //     console.log(`❌ Insufficient balance for Order #${i}. Required: ${packages.sale_price}, Available: ${summary.totalGold}`);
+            // }else{
+                purchase.count=purchase.count+1;
+                await purchase.save();
+            // }
             console.log(`\n📊 Progress: ${i}/${count}`);
             console.log(`✅ Success: ${results.length}, ❌ Failed: ${errors.length}`);
 
@@ -424,7 +507,8 @@ export default class PurchasesController {
                     secretTotp,
                     product,
                     orderNumber: i,
-                    purchase
+                    purchase,
+                    packages
                 });
                 const elapsedTime = Date.now() - startTime;
 
@@ -455,6 +539,8 @@ export default class PurchasesController {
             }
         }
 
+        purchase.status = 'completed';
+        await purchase.save();
         // Summary
         console.log('\n' + '='.repeat(50));
         console.log('📋 ORDER SUMMARY');
@@ -475,5 +561,59 @@ export default class PurchasesController {
         }
 
         return { results, errors };
+    }
+
+    async accsummary({ email, passPlain}: any) {
+        console.log(email)
+        console.log(passPlain)
+         const serviceCode = "0770";
+        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
+        const difTime = 0;
+
+        // Clear cookies
+        try { jar.removeAllCookiesSync(); } catch (e) { }
+
+        const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
+
+        const loginRes = await runStep("COP_LOGIN", async () => {
+            const res = await client.post(
+                "https://razerid.razer.com/api/emily/7/login/get",
+                { data: xml, encryptedPw: "rev1", clientId },
+                {
+                    headers: {
+                        "content-type": "application/json",
+                        "accept": "application/json, text/plain, */*",
+                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
+                    },
+                }
+            );
+            const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
+            const parsed = parseRazerCopLoginXml(loginXml);
+            if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
+            return { parsed, raw: loginXml };
+        });
+
+        const { parsed } = loginRes;
+        let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
+        return accountSummary;
+    }
+
+    // Razer API Methods
+    async getAccountSummary(accessToken: string, uuid: string) {
+        try {
+            const res = await axios.get("https://gold.razer.com/api/gold/accountsummary", {
+                headers: {
+                    "accept": "application/json, text/plain, */*",
+                    "x-razer-accesstoken": accessToken,
+                    "x-razer-fpid": '16f47c6af38e40251246e9f19a73f501',
+                    "x-razer-razerid": uuid,
+                    "referer": "https://gold.razer.com/global/en/account/summary",
+                },
+            });
+            return res.data;
+        } catch (err: any) {
+            console.error("❌ Failed to fetch account summary:", err.message);
+            return null;
+        }
     }
 }
