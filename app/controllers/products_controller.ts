@@ -23,6 +23,7 @@ export default class ProductsController {
 
 			let input:any = await this.convertRazerGoldUrlToApi(payload.link);
 			let slug = await this.getslug(payload.link);
+			console.log("API URL:", input);
 			const responsea = await axios.get(input,
 			{
 				headers: {
@@ -31,9 +32,10 @@ export default class ProductsController {
 				"user-agent":
 					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
 				},
-				timeout: 15000,
 			}
 			);
+
+			console.log(responsea.data);
 
 			data.link=payload.link;
 			await data.save()
@@ -89,8 +91,6 @@ export default class ProductsController {
 
 			// You can adjust the catalog ID (2) accordingly
 			const catalogId = 2;
-
-			console.log("Catalog Slug:", slug);
 
 			const apiUrl = `${url.origin}/api/v2/content/gold/catalogs/${catalogId}/${slug}`;
 			return apiUrl;
