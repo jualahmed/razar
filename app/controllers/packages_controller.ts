@@ -67,8 +67,7 @@ export default class PackagesController {
 		const product = await Package.find(params.id);
 		const products = await Product.all();
 		const packages = await Package.all();
-		let shelltype = await Shelltype.all();
-		return view.render('admin/package/edit.edge',{product:product,products:products,packages:packages,shelltype:shelltype})
+		return view.render('admin/package/edit.edge',{product:product,products:products,packages:packages})
 	}
    
 	async update({ params, request,session ,response}: HttpContext) {
