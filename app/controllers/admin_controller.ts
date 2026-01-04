@@ -347,7 +347,7 @@ export default class AdminController {
 		try {
 			const user= await User.verifyCredentials(email, password)
 			await auth.use('web').login(user)
-			response.redirect('/admin')
+			response.redirect('/admin/banar')
 		} catch (error) {
 			session.flash('form', 'Your email, or password is incorrect')
 			return response.redirect().back()
