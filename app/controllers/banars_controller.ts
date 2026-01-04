@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Banar from '#models/banar'
 import axios from 'axios';
-import { wrapper } from "axios-cookiejar-support";
+// import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 import CryptoJS from "crypto-js";
 import { HttpsProxyAgent } from 'https-proxy-agent';
@@ -13,14 +13,14 @@ const jar = new CookieJar();
 
 const cookieJar = new CookieJar();
 
-const client = wrapper(
-    axios.create({
-        jar,
-        withCredentials: true,
-        timeout: 30000,
-        validateStatus: () => true,
-    })
-);
+// const client = wrapper(
+//     axios.create({
+//         jar,
+//         withCredentials: true,
+//         timeout: 30000,
+//         validateStatus: () => true,
+//     })
+// );
 
 const defaultOptions:any = {
     headers: {
