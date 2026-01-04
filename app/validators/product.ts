@@ -29,17 +29,13 @@ export const ConfirmPasswordValidator = vine.compile(
 
 export const createProductValidator = vine.compile(
   vine.object({
-    name: vine.string().trim().minLength(4),
-   slug: vine.string().trim().minLength(4),
-    description: vine.string().trim().escape().minLength(12),
+   link: vine.string().trim().minLength(4),
   })
 )
 
 
 export const updateProductValidator = vine.compile(
   vine.object({
-    name: vine.string().trim().minLength(4),
-    slug: vine.string().trim().minLength(4),
-    description: vine.string().trim().escape().minLength(12),
+    link: vine.string().trim().minLength(4),
   })
 )

@@ -13,7 +13,7 @@ export default class Package extends BaseModel {
   declare relative_unipin_ids:string
 
   @column()
-  declare tag_line:string
+  declare tag_line:any
 
   @column()
   declare server:string

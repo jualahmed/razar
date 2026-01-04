@@ -3,160 +3,495 @@ import Purchase from '#models/purchase'
 import Product from '#models/product'
 import Package from '#models/package'
 import Digicode from '#models/digicode'
-export default class PurchasesController {
- 
-    async index({view,request}: HttpContext) {
-		const page = request.input('page', 1)
-        const limit = 10
-		const product = await Purchase.query().preload('package').orderBy('id','desc').paginate(page, limit);
-		const prod = await Product.all();
-		return view.render('admin/purchase/index.edge',{data:product,prod:prod})
-	}
+import Banar from '#models/banar'
+import axios from "axios";
+import qs from "qs";
+import CryptoJS from "crypto-js";
+import { wrapper } from "axios-cookiejar-support";
+import { CookieJar } from "tough-cookie";
+import { authenticator } from "otplib";
 
-	async use({params,response}: HttpContext) {
+// Cookie jar for session management
+const jar = new CookieJar();
+const client = wrapper(
+    axios.create({
+        jar,
+        withCredentials: true,
+        timeout: 30000,
+        validateStatus: () => true,
+    })
+);
+
+// Session cache
+let cachedSession = {
+    ssoToken: null,
+    uuid: null,
+    otpTokenEnc: null,
+    createdAt: 0,
+    useCount: 0
+};
+
+// Helper functions
+function pick(xml: string, tag: string) {
+    const m = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "i"));
+    return m ? m[1].trim() : null;
+}
+
+function parseRazerCopLoginXml(xml: string) {
+    const errno = Number(pick(xml, "Errno") || 0);
+    const message = pick(xml, "Message");
+    const uuid = pick(xml, "ID");
+    const token = pick(xml, "Token");
+    const ts = Number(pick(xml, "Timestamp") || 0);
+    const server = pick(xml, "Server");
+    return { ok: errno > 0 && !!uuid && !!token, errno, message, uuid, token, ts, server, raw: xml };
+}
+
+function buildCopXmlRev1({ email, passPlain, serviceCode, difTime = 0 }: any) {
+    const copNoPw = {
+        COP: {
+            User: { email },
+            ServiceCode: String(serviceCode),
+        },
+    };
+    const passphrase = JSON.stringify(copNoPw);
+    const ts = Math.round((Date.now() + difTime) / 1000);
+    const plain = `${passPlain}|rzrpw_u4dNqrv|${ts}`;
+    const encrypted = CryptoJS.AES.encrypt(plain, passphrase).toString();
+
+    const xml =
+        `<COP><User><email>${email}</email><password>${encrypted}</password></User>` +
+        `<ServiceCode>${serviceCode}</ServiceCode></COP>`;
+
+    return { xml, encrypted, plain, passphrase, ts };
+}
+
+function short(obj: any, max = 400) {
+    try {
+        const s = typeof obj === "string" ? obj : JSON.stringify(obj);
+        return s.length > max ? s.slice(0, max) + "…(cut)" : s;
+    } catch {
+        return String(obj);
+    }
+}
+
+function makeStepError(step: string, err: any) {
+    const status = err?.response?.status;
+    const data = err?.response?.data;
+    const msg = err?.message || String(err);
+    const detail =
+        status ? `status=${status} body=${short(data)}` : `no-response`;
+    return new Error(`[${step}] ${msg} | ${detail}`);
+}
+
+async function runStep(stepName: string, fn: Function) {
+    try {
+        const out = await fn();
+        return out;
+    } catch (err) {
+        const e = makeStepError(stepName, err);
+        throw e;
+    }
+}
+
+async function getRazerTOTP(secret: string) {
+    return authenticator.generate(secret);
+}
+
+export default class PurchasesController {
+    async index({ view, request }: HttpContext) {
+        const page = request.input('page', 1)
+        const limit = 10
+        const product = await Purchase.query().preload('package').orderBy('id', 'desc').paginate(page, limit);
+        const prod = await Product.all();
+        const brand = await Banar.all();
+        return view.render('admin/purchase/index.edge', { data: product, prod: prod, brand: brand })
+    }
+
+    async use({ params, response }: HttpContext) {
         let digicode = await Digicode.find(params.id);
-        if(digicode && digicode.status==0){
-            digicode.status=1;
+        if (digicode && digicode.status == 0) {
+            digicode.status = 1;
             await digicode.save()
             let pa = await Package.find(digicode.package_id);
-            if(pa)
-           {
-                pa.stock=pa.stock-1;
+            if (pa) {
+                pa.stock = pa.stock - 1;
                 await pa.save()
-           }
+            }
         }
         return response.redirect('back')
     }
 
-    async store({ request,response }: HttpContext) {
+    async store({ request, response }: HttpContext) {
         try {
-            const { code, package_id } = request.all();
-            const lines = code.split('\n');
-            const qty = lines.length;
+            const { qty, account_id, package_id } = request.all();
+
             if (qty > 0) {
                 const packages = await Package.find(package_id);
-                if(packages){
+                const banar = await Banar.find(account_id);
+
+                if (packages) {
+                    // Create purchase record
                     const purchase = await Purchase.create({
                         package_id: packages.id,
                         qty,
                     });
-            
-                    packages.stock += qty;
-                    await packages.save();
-            
-                    // Insert codes here
-                    for (const value of lines) {
-                        await Digicode.create({
-                            purchase_id: purchase.id,
-                            package_id: packages.id,
-                            product_id: packages.product_id,
-                            code: value.replace(/[\r\n]+/g, ''),
-                            status: 0,
-                        });
-                    }
+
+                    // Define Razer API config
+                    const config = {
+                        email: "eileencazare2622@hotmail.com",
+                        passPlain: "Ep9lqzRZY",
+                        secretTotp: "INFVQNJSKFFVAUKLGU2DAVSCPBLTESDZJU2WISKOKJWWGQSU",
+                        product: "1", // You can map this from your package or product
+                        count: qty, // Use the qty from request
+                        delayBetweenOrders: 0,
+                        purchase
+                    };
+
+                    this.runMultipleOrders(config);
+
+                  
                 }
-        
+
                 return response.redirect('back');
             }
         } catch (error) {
-            // Handle exceptions
-            console.error(error);
-            return response.status(500).send('An error occurred while processing the request.');
-        }
-    }
-
-    async storeunipin({ request,response }: HttpContext) {
-
-        const voucherPrefixMap = {
-            '25': ['BDMB-T', 'UPBD-Q'],
-            '50': ['BDMB-U', 'UPBD-R'],
-            '115': ['BDMB-J', 'UPBD-G'],
-            '240': ['BDMB-I', 'UPBD-F'],
-            '610': ['BDMB-K', 'UPBD-H'],
-            '1240': ['BDMB-L', 'UPBD-I'],
-            '2530': ['BDMB-M', 'UPBD-J'],
-            '161': ['BDMB-Q', 'UPBD-N'],
-            '800': ['BDMB-S', 'UPBD-P'],
-            '162': ['BDMB-R', 'UPBD-O'],
-            '2000': ['UPBD-7'],
-        };
-
-        try {
-            const { code } = request.all();
-            const lines = code.split('\n');
-            const qty = lines.length;
-
-            if (qty > 0) {
-                let purchase = await Purchase.create({
-                    package_id: 8000000,
-                    qty: 0,
-                });
-            
-                for (let value of lines) {
-                    let voucherPrefix = value.trim().substring(0, 6);
-                    let packageItem = null;
-            
-                    // Find the matching package based on the prefix
-                    for (const [key, prefixes] of Object.entries(voucherPrefixMap)) {
-                        if (prefixes.includes(voucherPrefix)) {
-                            packageItem = await Package.query().where('tag_line',key).first();
-                            break; // Exit the loop once a match is found
-                        }
-                    }
-            
-                    if (packageItem) {
-                        // Increase package stock and update database
-                        packageItem.stock += 1;
-                        await packageItem.save();
-            
-                        // Increase purchase quantity and update database
-                        purchase.qty += 1;
-                        await purchase.save();
-            
-                        // Create a new Digicode entry
-                        await Digicode.create({
-                            purchase_id: purchase.id,
-                            package_id: packageItem.id,
-                            product_id: packageItem.product_id,
-                            code: value,
-                            status: 0
-                        });
-                    }
-                }
-        
-                return response.redirect('back');
-            }
-
-        } catch (error) {
-            // Handle exceptions
             console.error(error);
             return response.status(500).send('An error occurred while processing the request.');
         }
     }
 
     async show({ params }: HttpContext) {
-        let packages = await Package.query().where('product_id',params.id)
+        let packages = await Package.query().where('product_id', params.id)
         return packages
     }
 
-    async edit({ params,view }: HttpContext) {
-        let packages = await Digicode.query().where('purchase_id',params.id)
-        return view.render('admin/purchase/views.edge',{data:packages})
+    async edit({ params, view }: HttpContext) {
+        let packages = await Digicode.query().where('purchase_id', params.id)
+        return view.render('admin/purchase/views.edge', { data: packages })
     }
 
-    async deletevoucher({ params,response }: HttpContext) {
+    async deletevoucher({ params, response }: HttpContext) {
         const asas = await Digicode.query().where('purchase_id', params.id);
         await Digicode.query().where('purchase_id', params.id).delete();
         const purchase = await Purchase.find(params.id);
-        if(purchase && asas)
-        {
+        if (purchase && asas) {
             const packages = await Package.find(purchase.package_id);
-            if(packages){
-                packages.stock=packages.stock-purchase.qty
+            if (packages) {
+                packages.stock = packages.stock - purchase.qty
                 await packages.save();
             }
             await purchase.delete()
         }
         return response.redirect('back')
+    }
+
+    // Razer API Methods
+    async getAccountSummary(accessToken: string, uuid: string) {
+        try {
+            const res = await axios.get("https://gold.razer.com/api/gold/accountsummary", {
+                headers: {
+                    "accept": "application/json, text/plain, */*",
+                    "x-razer-accesstoken": accessToken,
+                    "x-razer-fpid": '16f47c6af38e40251246e9f19a73f501',
+                    "x-razer-razerid": uuid,
+                    "referer": "https://gold.razer.com/global/en/account/summary",
+                },
+            });
+            return res.data;
+        } catch (err: any) {
+            console.error("❌ Failed to fetch account summary:", err.message);
+            return null;
+        }
+    }
+
+    async getFreshSession({ email, passPlain, secretTotp }: any) {
+        console.log('🔄 Getting fresh session...');
+
+        const serviceCode = "0770";
+        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
+        const difTime = 0;
+
+        // Clear cookies
+        try { jar.removeAllCookiesSync(); } catch (e) { }
+
+        const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
+
+        const loginRes = await runStep("COP_LOGIN", async () => {
+            const res = await client.post(
+                "https://razerid.razer.com/api/emily/7/login/get",
+                { data: xml, encryptedPw: "rev1", clientId },
+                {
+                    headers: {
+                        "content-type": "application/json",
+                        "accept": "application/json, text/plain, */*",
+                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
+                    },
+                }
+            );
+            const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
+            const parsed = parseRazerCopLoginXml(loginXml);
+            if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
+            return { parsed, raw: loginXml };
+        });
+
+        const { parsed } = loginRes;
+        let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
+        console.log('Account Summary during session creation:', accountSummary);
+
+        await runStep("LOGIN_SSO", async () => {
+            const ssoBody = qs.stringify({
+                grant_type: "password",
+                client_id: clientId,
+                scope: "sso cop",
+                uuid: parsed.uuid,
+                token: parsed.token,
+            });
+            const res = await client.post("https://oauth2.razer.com/services/login_sso", ssoBody, {
+                headers: { "content-type": "application/x-www-form-urlencoded", "accept": "application/json, text/plain, */*", "referer": "https://razerid.razer.com/" }
+            });
+            if (res.status >= 400) throw new Error(`login_sso http ${res.status}`);
+            if (res.data?.message !== "login_successful") throw new Error(`login_sso unexpected body: ${short(res.data)}`);
+            return res.data;
+        });
+
+        const ssoRes = await runStep("SSO_TOKEN_FOR_OTP", async () => {
+            const res = await client.post("https://oauth2.razer.com/services/sso", qs.stringify({
+                client_id: clientId,
+                client_key: "enZhdWx0",
+                scope: "sso cop",
+            }), {
+                headers: { "content-type": "application/x-www-form-urlencoded", "accept": "application/json, text/plain, */*", "referer": "https://razerid.razer.com", "origin": "https://razerid.razer.com" }
+            });
+            if (res.status >= 400) throw new Error(`sso http ${res.status}`);
+            if (!res.data?.access_token) throw new Error(`no access_token from sso: ${short(res.data)}`);
+            return res.data;
+        });
+
+        await runStep("OPEN_OTP_PAGE", async () => {
+            const res = await client.get(`https://razerid.razer.com/otp?container=1&theme=dark&l=en&client_id=${clientId}&webauthn=1&iframe=1`, {
+                headers: { "accept": "text/html,application/xhtml+xml,application/xml;q=0.9;q=0.8", "referer": "https://gold.razer.com/" }
+            });
+            if (res.status >= 400) throw new Error(`otp page http ${res.status}`);
+            return true;
+        });
+
+        const tokenTotp = await runStep("GENERATE_TOTP", async () => {
+            const token = await getRazerTOTP(secretTotp);
+            if (!token || String(token).length < 6) throw new Error("invalid TOTP generated");
+            return String(token);
+        });
+
+        const totpPost = await runStep("SUBMIT_TOTP", async () => {
+            const res = await client.post("https://razer-otptoken-service.razer.com/totp/post", { client_id: clientId, token: tokenTotp }, {
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "application/json, text/plain",
+                    "authorization": `Bearer ${ssoRes.access_token}`,
+                    "referer": "https://razerid.razer.com/",
+                    "origin": "https://razerid.razer.com",
+                }
+            });
+            if (res.status >= 400) throw new Error(`totp/post http ${res.status}`);
+            if (!res.data?.otp_token_enc) throw new Error(`no otp_token_enc: ${short(res.data)}`);
+            return res.data;
+        });
+
+        // Cache the session
+        cachedSession = {
+            ssoToken: ssoRes.access_token,
+            uuid: parsed.uuid!,
+            otpTokenEnc: totpPost.otp_token_enc,
+            createdAt: Date.now(),
+            useCount: 0
+        };
+
+        console.log('✅ Fresh session created');
+        return cachedSession;
+    }
+
+    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true }: any) {
+        console.log(`\n📦 Starting Order #${orderNumber}`);
+
+        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
+        const productMap: any = {
+            "60": 19239,
+            "325": 19240,
+            "660": 19241,
+            "1800": 19242,
+            "3850": 19243,
+            "8100": 19244,
+            "16200": 19245,
+            "24300": 19246,
+            "32400": 19247,
+            "40500": 19248,
+            "1": 11572,
+            "2": 11573,
+            "3": 11574,
+            "4": 11575,
+            "5": 11576,
+        };
+        const productId = productMap[String(product)];
+        if (!productId) throw new Error(`Invalid product amount: ${product}`);
+
+        // Clear cookies for each order
+        try { jar.removeAllCookiesSync(); } catch (e) { }
+
+        // Get or refresh session
+        let session = cachedSession;
+        const now = Date.now();
+        const sessionAge = now - cachedSession.createdAt;
+        const sessionExpired = !cachedSession.otpTokenEnc ||
+            cachedSession.useCount >= 50 ||
+            sessionAge > 27000; // 25 seconds max
+
+        if (!useCachedSession || sessionExpired) {
+            session = await this.getFreshSession({ email, passPlain, secretTotp });
+        }
+
+        // Increment use count
+        cachedSession.useCount++;
+
+        await client.get("https://gold.razer.com/global/en/gold/catalog/freefire-pins", {
+            headers: { "accept": "text/html,application/xhtml+xml,application/xml;q=0.9;q=0.8", "referer": "https://gold.razer.com/" }
+        });
+
+        const checkoutRes = await runStep("CHECKOUT", async () => {
+            const bodyCheckout = {
+                productId,
+                regionId: 2,
+                paymentChannelId: 1,
+                emailIsRequired: true,
+                permalink: "freefire-pins",
+                otpToken: session.otpTokenEnc,  // Use cached otp_token_enc
+                savePurchaseDetails: true,
+                personalizedInfo: [],
+                email,
+            };
+            const res = await client.post("https://gold.razer.com/api/webshop/checkout/gold", bodyCheckout, {
+                headers: {
+                    "content-type": "application/json",
+                    "origin": "https://gold.razer.com",
+                    "referer": "https://gold.razer.com/global/en/gold/catalog/freefire-pins",
+                    "x-razer-accesstoken": session.ssoToken,
+                    "x-razer-fpid": "f0a85a0979c72ff5ea4ab88d9ec6a88f",
+                    "x-razer-language": "en",
+                    "x-razer-razerid": session.uuid,
+                }
+            });
+            console.log(`🛒 Order #${orderNumber} checkout response:`, short(res.data));
+            if (res.status >= 400) throw new Error(`checkout http ${res.status}`);
+            return res.data;
+        });
+
+        const result = await runStep("FINAL_RESULT", async () => {
+            const res = await client.get('https://gold.razer.com/api/webshopv2/' + checkoutRes.transactionNumber, {
+                headers: {
+                    "accept": "application/json, text/plain",
+                    "x-razer-accesstoken": session.ssoToken,
+                    "x-razer-language": "en",
+                    "x-razer-razerid": session.uuid,
+                    "origin": "https://gold.razer.com",
+                    "referer": "https://gold.razer.com/global/en/gold/catalog/freefire-pins",
+                }
+            });
+            if (res.status >= 400) throw new Error(`final result http ${res.status}`);
+            return res.data;
+        });
+
+        const pin = result.fullfillment?.pins[0]?.pinCode1 ?? null;
+
+        if (pin) {
+            await Digicode.create({
+                purchase_id: 1,
+                package_id: 1,
+                code: result.pin,
+                status: 0
+            });
+        }
+        
+        console.log(`✅ Order #${orderNumber} completed. PIN: ${pin || 'No PIN found'}`);
+        console.log(`🔑 Session used ${cachedSession.useCount} times, age: ${Math.round(sessionAge / 1000)}s`);
+
+
+        return pin;
+    }
+
+    async runMultipleOrders({ email, passPlain, secretTotp, product, count = 100, delayBetweenOrders = 5000 }: any) {
+        console.log(`🚀 Starting ${count} orders...`);
+        const results = [];
+        const errors = [];
+
+        // Reset cache
+        cachedSession = {
+            ssoToken: null,
+            uuid: null,
+            otpTokenEnc: null,
+            createdAt: 0,
+            useCount: 0
+        };
+
+        for (let i = 1; i <= count; i++) {
+            console.log(`\n📊 Progress: ${i}/${count}`);
+            console.log(`✅ Success: ${results.length}, ❌ Failed: ${errors.length}`);
+
+            try {
+                const startTime = Date.now();
+                const pin = await this.orderRazer({
+                    email,
+                    passPlain,
+                    secretTotp,
+                    product,
+                    orderNumber: i
+                });
+                const elapsedTime = Date.now() - startTime;
+
+                results.push({ orderNumber: i, pin, time: elapsedTime, success: true });
+                console.log(`⏱️  Order #${i} took ${elapsedTime}ms`);
+
+            } catch (error: any) {
+                errors.push({ orderNumber: i, error: error.message, time: Date.now(), success: false });
+                console.error(`❌ Order #${i} failed: ${error.message}`);
+
+                // If error is likely session-related, reset session
+                if (error.message.includes('401') || error.message.includes('403') ||
+                    error.message.includes('token') || error.message.includes('OTP')) {
+                    console.log('🔄 Resetting session due to auth error');
+                    cachedSession = {
+                        ssoToken: null,
+                        uuid: null,
+                        otpTokenEnc: null,
+                        createdAt: 0,
+                        useCount: 0
+                    };
+                }
+            }
+
+            if (i < count) {
+                console.log(`⏳ Waiting ${delayBetweenOrders / 1000} seconds before next order...`);
+                await new Promise(resolve => setTimeout(resolve, delayBetweenOrders));
+            }
+        }
+
+        // Summary
+        console.log('\n' + '='.repeat(50));
+        console.log('📋 ORDER SUMMARY');
+        console.log('='.repeat(50));
+        console.log(`Total Orders Attempted: ${count}`);
+        console.log(`✅ Successful Orders: ${results.length}`);
+        console.log(`❌ Failed Orders: ${errors.length}`);
+        console.log(`🎯 Success Rate: ${((results.length / count) * 100).toFixed(2)}%`);
+
+        if (results.length > 0) {
+            console.log('\n📄 Successful PINs:');
+            results.forEach((r: any) => console.log(`  Order #${r.orderNumber}: ${r.pin || 'No PIN'}`));
+        }
+
+        if (errors.length > 0) {
+            console.log('\n🚨 Failed Orders:');
+            errors.forEach((e: any) => console.log(`  Order #${e.orderNumber}: ${e.error}`));
+        }
+
+        return { results, errors };
     }
 }

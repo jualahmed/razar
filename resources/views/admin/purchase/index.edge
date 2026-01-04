@@ -28,10 +28,6 @@
 			Add New
 		</button>
 
-    	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrops">
-			Add New Unipin
-		</button>
-
 		<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<form action="{{ route('admin.purchase.store') }}" class="actionForm" method="POST" accept-charset="utf-8" enctype="multipart/form-data">
@@ -45,10 +41,17 @@
 						<div class="modal-body">
 							{{ csrfField() }}
 							<div class="card-body">
+								<select class="form-control" name="account_id" required id="">
+									<option value="" disabled {{ !flashMessages.get('old.account') ? 'selected' : '' }}>Select a Account</option>
+									@each((u, index) in brand)
+										<option value="{{ u.id }}" >{{ u.email }}</option>
+									@end
+								</select>
+								<br>
 								<select class="form-control" name="product_id" required id="product">
 									<option value="" disabled {{ !flashMessages.get('old.product_id') ? 'selected' : '' }}>Select a product</option>
 									@each((u, index) in prod)
-										<option value="{{ u.id }}" >{{ u.name }}</option>
+										<option value="{{ u.id }}" >{{ u.link }}</option>
 									@end
 								</select>
 								<br>
@@ -56,8 +59,7 @@
 									<option value="" disabled {{ !flashMessages.get('old.package_id') ? 'selected' : '' }}>Select a Package</option>
 								</select>
 								<br>
-								<p style="color:aliceblue">Code</p>
-								<textarea name="code" id="" cols="55" rows="5"></textarea>
+								<input type="text" name="qty" class="form-control" placeholder="Enter Quantity" required value="2147483645">
 							</div>
 						</div>
 						<div class="modal-footer">

@@ -29,8 +29,6 @@ router.group(() => {
     router.get('/transaction', '#controllers/transactions_controller.index').as('transaction')
     router.get('/transaction/complete/:id', '#controllers/transactions_controller.complete').as('transaction.complete')
     router.get('/transaction/cancel/:id', '#controllers/transactions_controller.cancel').as('transaction.cancel')
-    router.get('/pushnotify', '#controllers/pushnotifications_controller.index').as('pushnotify')
-    router.post('/pushnotify/send', '#controllers/pushnotifications_controller.send').as('pushnotify.send')
 
     router.resource('/product', '#controllers/products_controller');
     router.post('/product/addfield/:id', '#controllers/products_controller.addfield').as('product.addfield')
@@ -38,8 +36,7 @@ router.group(() => {
     router.resource('/package', '#controllers/packages_controller');
     router.resource('/purchase', '#controllers/purchases_controller').except(['create','destroy','update']);
     router.post('/purchase/storeunipin', '#controllers/purchases_controller.storeunipin').as('storeunipin')
-
-
+    router.resource('/banar', '#controllers/banars_controller');
     
 
 })
