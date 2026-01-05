@@ -32,7 +32,9 @@ const defaultOptions:any = {
     }
 };
 
-defaultOptions.httpsAgent = proxyAgent
+if(env.get('PROXY_ENABLED')){
+    defaultOptions.httpsAgent = proxyAgent
+}
 
 
 function pick(xml: string, tag: string) {
@@ -198,22 +200,21 @@ export default class BanarsController {
 
         const loginRes = await runStep("COP_LOGIN", async () => {
             
-	    const requestOptions:any = { ...defaultOptions };
+	        const requestOptions:any = { ...defaultOptions };
 
             const cookies = await cookieJar.getCookieString('https://razerid.razer.com/api/emily/7/login/get');
-                if (cookies) {
-                    requestOptions.headers= {
-                        ...requestOptions.headers,
-                        'Cookie': cookies
-                    };
-                }
+            if (cookies) {
+                requestOptions.headers= {
+                    ...requestOptions.headers,
+                    'Cookie': cookies
+                };
+            }
 
             const res = await axios.post(
                 "https://razerid.razer.com/api/emily/7/login/get",
                 { data: xml, encryptedPw: "rev1", clientId },
                 requestOptions
             );
-            console.log("❓ COP_LOGIN response:", short(res.data));
             const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
             const parsed = parseRazerCopLoginXml(loginXml);
             if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);

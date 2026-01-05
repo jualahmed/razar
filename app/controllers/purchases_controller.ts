@@ -10,10 +10,13 @@ import CryptoJS from "crypto-js";
 import { wrapper } from "axios-cookiejar-support";
 import { CookieJar } from "tough-cookie";
 import { authenticator } from "otplib";
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import env from '#start/env'
 
+const proxyAgent = new HttpsProxyAgent(env.get('PROXY') || ''); 
 // Cookie jar for session management
 const jar = new CookieJar();
-
+const cookieJar = new CookieJar();
 const client = wrapper(
     axios.create({
         jar,
@@ -22,6 +25,21 @@ const client = wrapper(
         validateStatus: () => true,
     })
 );
+
+const defaultOptions:any = {
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Priority': 'high'
+    }
+};
+
+if(env.get('PROXY_ENABLED')){
+    defaultOptions.httpsAgent = proxyAgent
+}
+
 
 // Session cache
 let cachedSession = {
@@ -285,17 +303,22 @@ export default class PurchasesController {
 
         const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
 
+        const requestOptions:any = { ...defaultOptions };
+
+        const cookies = await cookieJar.getCookieString('https://razerid.razer.com/api/emily/7/login/get');
+        if (cookies) {
+            requestOptions.headers= {
+                ...requestOptions.headers,
+                'Cookie': cookies
+            };
+        }
+
         const loginRes = await runStep("COP_LOGIN", async () => {
-            const res = await client.post(
+
+            const res = await axios.post(
                 "https://razerid.razer.com/api/emily/7/login/get",
                 { data: xml, encryptedPw: "rev1", clientId },
-                {
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json, text/plain, */*",
-                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
-                    },
-                }
+                requestOptions
             );
             const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
             const parsed = parseRazerCopLoginXml(loginXml);
@@ -337,9 +360,9 @@ export default class PurchasesController {
         });
 
         await runStep("OPEN_OTP_PAGE", async () => {
-            const res = await client.get(`https://razerid.razer.com/otp?container=1&theme=dark&l=en&client_id=${clientId}&webauthn=1&iframe=1`, {
-                headers: { "accept": "text/html,application/xhtml+xml,application/xml;q=0.9;q=0.8", "referer": "https://gold.razer.com/" }
-            });
+            const res = await axios.get(`https://razerid.razer.com/otp?container=1&theme=dark&l=en&client_id=${clientId}&webauthn=1&iframe=1`, 
+                requestOptions
+            );
             if (res.status >= 400) throw new Error(`otp page http ${res.status}`);
             return true;
         });
