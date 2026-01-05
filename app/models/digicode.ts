@@ -19,6 +19,9 @@ export default class Digicode extends BaseModel {
   declare product_id:number
 
   @column()
+  declare tnx_id:string
+
+  @column()
   declare package_id:number
   
   @column()

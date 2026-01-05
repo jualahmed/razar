@@ -30,6 +30,7 @@ router.group(() => {
     router.get('/transaction/complete/:id', '#controllers/transactions_controller.complete').as('transaction.complete')
     router.get('/transaction/cancel/:id', '#controllers/transactions_controller.cancel').as('transaction.cancel')
     router.get('/purchase/:id/start-order', '#controllers/purchases_controller.startOrder').as('purchase.startOrder')
+    router.get('/purchase/:id/fatch-order', '#controllers/purchases_controller.getTransactionHistory').as('purchase.fatch')
     router.get('/banar/:id/updatebalance', '#controllers/banars_controller.updatebalance').as('banar.updatebalance')
     router.resource('/product', '#controllers/products_controller');
     router.post('/product/addfield/:id', '#controllers/products_controller.addfield').as('product.addfield')

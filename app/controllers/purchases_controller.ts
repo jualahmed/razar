@@ -434,6 +434,15 @@ export default class PurchasesController {
             return res.data;
         });
 
+        let digi = await Digicode.create({
+            purchase_id: purchase.id,
+            tnx_id: checkoutRes.transactionNumber,
+            package_id: purchase.package_id,
+            orderId: checkoutRes.amount,
+            status: 0,
+        });
+
+
         const result = await runStep("FINAL_RESULT", async () => {
             const res = await client.get('https://gold.razer.com/api/webshopv2/' + checkoutRes.transactionNumber, {
                 headers: {
@@ -452,17 +461,13 @@ export default class PurchasesController {
         const pin = result.fullfillment?.pins[0]?.pinCode1 ?? null;
 
         if (pin) {
-            await Digicode.create({
-                purchase_id: purchase.id,
-                package_id: purchase.package_id,
-                code: result.pin,
-                status: 0,
-            });
+            digi.code = pin;
+            digi.status = 1;
+            await digi.save();
         }
         
         console.log(`✅ Order #${orderNumber} completed. PIN: ${pin || 'No PIN found'}`);
         console.log(`🔑 Session used ${cachedSession.useCount} times, age: ${Math.round(sessionAge / 1000)}s`);
-
 
         return pin;
     }
@@ -564,9 +569,7 @@ export default class PurchasesController {
     }
 
     async accsummary({ email, passPlain}: any) {
-        console.log(email)
-        console.log(passPlain)
-         const serviceCode = "0770";
+        const serviceCode = "0770";
         const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
         const difTime = 0;
 
@@ -616,4 +619,89 @@ export default class PurchasesController {
             return null;
         }
     }
+
+    async getTransactionHistory({ params,response }: HttpContext){
+
+        const serviceCode = "0770";
+        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
+        const difTime = 0;
+        let purchase = await Purchase.find(params.id);
+        let acc = await Banar.find(purchase?.account_id || 0);
+        let digi = await Digicode.query().where('purchase_id', params.id);
+        const email = acc?.email || '';
+        const passPlain = acc?.password || '';
+        // Clear cookies
+        try { jar.removeAllCookiesSync(); } catch (e) { }
+
+        const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
+
+        const loginRes = await runStep("COP_LOGIN", async () => {
+            const res = await client.post(
+                "https://razerid.razer.com/api/emily/7/login/get",
+                { data: xml, encryptedPw: "rev1", clientId },
+                {
+                    headers: {
+                        "content-type": "application/json",
+                        "accept": "application/json, text/plain, */*",
+                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
+                    },
+                }
+            );
+            const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
+            const parsed = parseRazerCopLoginXml(loginXml);
+            if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
+            return { parsed, raw: loginXml };
+        });
+
+        const { parsed } = loginRes;
+
+        try {
+            for (const element of digi) {
+                const res = await client.get(
+                'https://gold.razer.com/api/webshopv2/' + element?.tnx_id,
+                {
+                    headers: {
+                    accept: "application/json, text/plain, */*",
+                    "x-razer-accesstoken": parsed.accessToken,
+                    "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
+                    "x-razer-razerid": parsed.uuid,
+                    referer: "https://gold.razer.com/global/en/account/summary",
+                    },
+                }
+                );
+
+                const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
+                if(pin){
+                    element.code = pin;
+                    element.status = 1;
+                }
+                await element.save();
+
+                await wait(2000);
+            }
+            return response.redirect('back');
+        } catch (err) {
+            console.error("❌ Failed to fetch transaction history:", err.message);
+            return 'failed';
+        }
+    }
+
 }
+
+
+    // https://gold.razer.com/api/transactions/history
+        // {
+        //     "amount": 1.04,
+        //     "currencyCode": "USD",
+        //     "description": "FreeFire USD 1 (100 Diamonds)",
+        //     "isRazerGold": true,
+        //     "isReceiptAvailable": true,
+        //     "paymentMethod": "Razer Gold",
+        //     "regionId": 2,
+        //     "status": 1,
+        //     "statusDescription": "Success",
+        //     "txnDate": "2026-01-05T00:54:35.060183+00:00",
+        //     "txnNum": "122K76L8IUSVEDF8DC17B",
+        //     "txnTabType": "webshop",
+        //     "txnTypeID": 2
+        // }
