@@ -23,7 +23,9 @@
   @endif
 
   <section class="content">
-	
+	<button class="btn btn-success mb-3" onclick="copyAllCodes()">
+  Copy All Codes
+</button>
     <div class="table-responsive">
       <table class="table is-striped is-hoverable dataTable no-footer" style="width: 100%;" role="grid"
         aria-describedby="stored_data_table_info">
@@ -31,24 +33,17 @@
           <tr role="row">
             <th>Name</th>
             <th>Date</th>
-			<th>Views</th>
           </tr>
         </thead>
         <tbody>
 		    @each((u, index) in data)
                 <tr class="odd">
                     <td>
-						<p> {{ u.code }} </p>
+						<p class="code-text"> {{ u.code }} </p>
 					</td>
                     <td>{{ u.updatedAt.toFormat('yyyy-MM-dd hh:mm:ss a') }} </td>
 					<td>
-                       @if(!u.status)
-                        <a href="/admin/purchase/use/{{ u.id }}" class="btn btn-primary mr-2" title="Edit">
-                            USE IT
-                        </a>
-                       @else
-                         <a href="" class="btn btn-danger mr-2">USED</a>
-                       @endif
+                      
 					</td>
                 </tr>
             @end
@@ -60,3 +55,32 @@
   </section>
 </div>
 @end
+
+
+<script>
+  // Copy single code
+  document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('copy-btn')) {
+      const code = e.target
+        .closest('tr')
+        .querySelector('.code-text')
+        .innerText;
+
+      navigator.clipboard.writeText(code).then(() => {
+        e.target.innerText = 'Copied';
+        setTimeout(() => (e.target.innerText = 'Copy'), 1500);
+      });
+    }
+  });
+
+  // Copy all codes
+  function copyAllCodes() {
+    const codes = Array.from(
+      document.querySelectorAll('.code-text')
+    ).map(el => el.innerText).join('\n');
+
+    navigator.clipboard.writeText(codes).then(() => {
+      alert('All codes copied!');
+    });
+  }
+</script>

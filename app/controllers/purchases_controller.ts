@@ -174,7 +174,7 @@ export default class PurchasesController {
     }
 
     async edit({ params, view }: HttpContext) {
-        let packages = await Digicode.query().where('purchase_id', params.id)
+        let packages = await Digicode.query().where('purchase_id', params.id).where('status', 1)
         return view.render('admin/purchase/views.edge', { data: packages })
     }
 
