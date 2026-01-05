@@ -291,14 +291,12 @@ export default class PurchasesController {
         }
     }
 
-    async getFreshSession({ email, passPlain, secretTotp }: any) {
-        console.log('🔄 Getting fresh session...');
 
-        const serviceCode = "0770";
+    async razarlogin({ email, passPlain }: any) {
+        console.log(`Logging in with email: ${email}`);
+             const serviceCode = "0770";
         const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
         const difTime = 0;
-        await wait(2000); 
-        // Clear cookies
         try { jar.removeAllCookiesSync(); } catch (e) { }
 
         const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
@@ -314,7 +312,6 @@ export default class PurchasesController {
         }
 
         const loginRes = await runStep("COP_LOGIN", async () => {
-
             const res = await axios.post(
                 "https://razerid.razer.com/api/emily/7/login/get",
                 { data: xml, encryptedPw: "rev1", clientId },
@@ -327,16 +324,25 @@ export default class PurchasesController {
         });
 
         const { parsed } = loginRes;
+        return parsed
+    }
+
+    async getFreshSession({ uuid, token, secretTotp }: any) {
+        console.log('🔄 Getting fresh session...');
+        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
+        await wait(2000);   
+        // Clear cookies
+        
         // let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
         // console.log('Account Summary during session creation:', accountSummary);
-
+        const requestOptions:any = { ...defaultOptions };
         await runStep("LOGIN_SSO", async () => {
             const ssoBody = qs.stringify({
                 grant_type: "password",
                 client_id: clientId,
                 scope: "sso cop",
-                uuid: parsed.uuid,
-                token: parsed.token,
+                uuid: uuid,
+                token: token,
             });
             const res = await client.post("https://oauth2.razer.com/services/login_sso", ssoBody, {
                 headers: { "content-type": "application/x-www-form-urlencoded", "accept": "application/json, text/plain, */*", "referer": "https://razerid.razer.com/" }
@@ -391,7 +397,7 @@ export default class PurchasesController {
         // Cache the session
         cachedSession = {
             ssoToken: ssoRes.access_token,
-            uuid: parsed.uuid!,
+            uuid: uuid!,
             otpTokenEnc: totpPost.otp_token_enc,
             createdAt: Date.now(),
             useCount: 0
@@ -401,7 +407,7 @@ export default class PurchasesController {
         return cachedSession;
     }
 
-    async orderRazer({ email, passPlain, secretTotp, product, orderNumber = 1, useCachedSession = true,purchase ,packages}: any) {
+    async orderRazer({ email, secretTotp, product, orderNumber = 1, useCachedSession = true,purchase ,packages,uuid,token}: any) {
         console.log(`\n📦 Starting Order #${orderNumber}`);
 
         const productId = product;
@@ -419,7 +425,7 @@ export default class PurchasesController {
             sessionAge > 27000; // 25 seconds max
 
         if (!useCachedSession || sessionExpired) {
-            session = await this.getFreshSession({ email, passPlain, secretTotp });
+            session = await this.getFreshSession({ uuid, token, secretTotp });
         }
 
         // Increment use count
@@ -508,22 +514,23 @@ export default class PurchasesController {
             createdAt: 0,
             useCount: 0
         };
-
+        let loginData = await this.razarlogin({ email, passPlain});
+        let uuid = loginData.uuid;
+        let token = loginData.token;
         for (let i = 1; i <= count; i++) {
-            // let summary = await this.accsummary({ email, passPlain});
-            // let acc = await Banar.find(purchase.account_id);
-            // if(acc){
-            //     acc.balance = summary ? summary.totalGold : 0;
-            //     await acc.save();
-            // }
-            // if(summary && packages.sale_price>summary.totalGold){
-            //     packages.cmt= `Insufficient balance for Order #${i}. Required: ${packages.sale_price}, Available: ${summary.totalGold}`;
-            //     await packages.save();
-            //     console.log(`❌ Insufficient balance for Order #${i}. Required: ${packages.sale_price}, Available: ${summary.totalGold}`);
-            // }else{
-                purchase.count=purchase.count+1;
-                await purchase.save();
-            // }
+
+            if (i % 2200 === 0) {
+                console.log(`🔐 Relogin triggered at order #${i}`);
+
+                loginData = await this.razarlogin({ email, passPlain });
+                uuid = loginData.uuid;
+                token = loginData.token;
+
+                console.log(`✅ Relogin successful`);
+            }
+
+            purchase.count=purchase.count+1;
+            await purchase.save();
             console.log(`\n📊 Progress: ${i}/${count}`);
             console.log(`✅ Success: ${results.length}, ❌ Failed: ${errors.length}`);
 
@@ -531,12 +538,13 @@ export default class PurchasesController {
                 const startTime = Date.now();
                 const pin = await this.orderRazer({
                     email,
-                    passPlain,
                     secretTotp,
                     product,
                     orderNumber: i,
                     purchase,
-                    packages
+                    packages,
+                    uuid,
+                    token
                 });
                 const elapsedTime = Date.now() - startTime;
 
@@ -589,58 +597,6 @@ export default class PurchasesController {
         }
 
         return { results, errors };
-    }
-
-    async accsummary({ email, passPlain}: any) {
-        const serviceCode = "0770";
-        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
-        const difTime = 0;
-
-        // Clear cookies
-        try { jar.removeAllCookiesSync(); } catch (e) { }
-
-        const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
-
-        const loginRes = await runStep("COP_LOGIN", async () => {
-            const res = await client.post(
-                "https://razerid.razer.com/api/emily/7/login/get",
-                { data: xml, encryptedPw: "rev1", clientId },
-                {
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json, text/plain, */*",
-                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
-                    },
-                }
-            );
-            const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
-            const parsed = parseRazerCopLoginXml(loginXml);
-            if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
-            return { parsed, raw: loginXml };
-        });
-
-        const { parsed } = loginRes;
-        let accountSummary = await this.getAccountSummary(parsed.token!, parsed.uuid!);
-        return accountSummary;
-    }
-
-    // Razer API Methods
-    async getAccountSummary(accessToken: string, uuid: string) {
-        try {
-            const res = await axios.get("https://gold.razer.com/api/gold/accountsummary", {
-                headers: {
-                    "accept": "application/json, text/plain, */*",
-                    "x-razer-accesstoken": accessToken,
-                    "x-razer-fpid": '16f47c6af38e40251246e9f19a73f501',
-                    "x-razer-razerid": uuid,
-                    "referer": "https://gold.razer.com/global/en/account/summary",
-                },
-            });
-            return res.data;
-        } catch (err: any) {
-            console.error("❌ Failed to fetch account summary:", err.message);
-            return null;
-        }
     }
 
     async getTransactionHistory({ params,response }: HttpContext){
