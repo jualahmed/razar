@@ -463,13 +463,6 @@ export default class PurchasesController {
             return res.data;
         });
 
-        let digi = await Digicode.create({
-            purchase_id: purchase.id,
-            tnx_id: checkoutRes.transactionNumber,
-            package_id: purchase.package_id,
-            orderId: checkoutRes.amount,
-            status: 0,
-        });
 
 
         const result = await runStep("FINAL_RESULT", async () => {
@@ -490,9 +483,16 @@ export default class PurchasesController {
         const pin = result.fullfillment?.pins[0]?.pinCode1 ?? null;
 
         if (pin) {
-            digi.code = pin;
-            digi.status = 1;
-            await digi.save();
+            
+            await Digicode.create({
+                purchase_id: purchase.id,
+                tnx_id: checkoutRes.transactionNumber,
+                package_id: purchase.package_id,
+                orderId: checkoutRes.amount,
+                code: pin,
+                status: 1,
+            });
+
         }
         
         console.log(`✅ Order #${orderNumber} completed. PIN: ${pin || 'No PIN found'}`);
@@ -610,6 +610,10 @@ export default class PurchasesController {
         const parsed = loginData;
 
         try {
+
+
+
+
             for (const element of digi) {
                 console.log(`Fetching transaction details for TNX ID: ${element?.tnx_id}`);
                 const res = await client.get(
@@ -624,6 +628,9 @@ export default class PurchasesController {
                     },
                 }
                 );
+
+
+                console.log(`Transaction details for TNX ID ${element?.tnx_id}:`, short(res.data));
 
                 const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
                 if(pin){
