@@ -601,38 +601,13 @@ export default class PurchasesController {
 
     async getTransactionHistory({ params,response }: HttpContext){
 
-        const serviceCode = "0770";
-        const clientId = "63c74d17e027dc11f642146bfeeaee09c3ce23d8";
-        const difTime = 0;
         let purchase = await Purchase.find(params.id);
         let acc = await Banar.find(purchase?.account_id || 0);
         let digi = await Digicode.query().where('purchase_id', params.id);
         const email = acc?.email || '';
         const passPlain = acc?.password || '';
-        // Clear cookies
-        try { jar.removeAllCookiesSync(); } catch (e) { }
-
-        const { xml } = buildCopXmlRev1({ email, passPlain, serviceCode, difTime });
-
-        const loginRes = await runStep("COP_LOGIN", async () => {
-            const res = await client.post(
-                "https://razerid.razer.com/api/emily/7/login/get",
-                { data: xml, encryptedPw: "rev1", clientId },
-                {
-                    headers: {
-                        "content-type": "application/json",
-                        "accept": "application/json, text/plain, */*",
-                        "referer": `https://razerid.razer.com/?client_id=${clientId}`,
-                    },
-                }
-            );
-            const loginXml = typeof res.data === "string" ? res.data : (res.data?.data || "");
-            const parsed = parseRazerCopLoginXml(loginXml);
-            if (!parsed.ok) throw new Error(`Login failed: errno=${parsed.errno} msg=${parsed.message || "-"}`);
-            return { parsed, raw: loginXml };
-        });
-
-        const { parsed } = loginRes;
+        const loginData = await this.razarlogin({ email, passPlain});
+        const parsed = loginData;
 
         try {
             for (const element of digi) {
