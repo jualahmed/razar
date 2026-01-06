@@ -631,7 +631,7 @@ export default class PurchasesController {
                 }
                 await element.save();
 
-                await wait(2000);
+                await wait(500);
             }
             return response.redirect('back');
         } catch (err) {
