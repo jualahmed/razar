@@ -611,6 +611,7 @@ export default class PurchasesController {
 
         try {
             for (const element of digi) {
+                console.log(`Fetching transaction details for TNX ID: ${element?.tnx_id}`);
                 const res = await client.get(
                 'https://gold.razer.com/api/webshopv2/' + element?.tnx_id,
                 {
