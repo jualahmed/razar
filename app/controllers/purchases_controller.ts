@@ -609,43 +609,33 @@ export default class PurchasesController {
         const loginData = await this.razarlogin({ email, passPlain});
         const parsed = loginData;
 
-        try {
+        for (const element of digi) {
+            console.log(`Fetching transaction details for TNX ID: ${element?.tnx_id}`);
+            const res = await client.get(
+            'https://gold.razer.com/api/webshopv2/' + element?.tnx_id,
+            {
+                headers: {
+                accept: "application/json, text/plain, */*",
+                "x-razer-accesstoken": parsed.token,
+                "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
+                "x-razer-razerid": parsed.uuid,
+                referer: "https://gold.razer.com/global/en/account/summary",
+                },
+            }
+            );
 
-
-
-
-            for (const element of digi) {
-                console.log(`Fetching transaction details for TNX ID: ${element?.tnx_id}`);
-                const res = await client.get(
-                'https://gold.razer.com/api/webshopv2/' + element?.tnx_id,
-                {
-                    headers: {
-                    accept: "application/json, text/plain, */*",
-                    "x-razer-accesstoken": parsed.accessToken,
-                    "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
-                    "x-razer-razerid": parsed.uuid,
-                    referer: "https://gold.razer.com/global/en/account/summary",
-                    },
-                }
-                );
-
-
-                console.log(`Transaction details for TNX ID ${element?.tnx_id}:`, short(res.data));
-
+            if(res.data.fullfillment?.pins!=null){
                 const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
                 if(pin){
                     element.code = pin;
                     element.status = 1;
                 }
                 await element.save();
-
-                await wait(500);
             }
-            return response.redirect('back');
-        } catch (err) {
-            console.error("❌ Failed to fetch transaction history:", err.message);
-            return 'failed';
+            await wait(500);
         }
+        return response.redirect('back');
+       
     }
 
 }
