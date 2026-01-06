@@ -624,7 +624,12 @@ export default class PurchasesController {
         let data = r.data
         let arr = [];
         for (const element of data.Transactions) {
-            if(element.statusDescription && element.statusDescription == "Success" && (!date || element.txnDate.startsWith(date))){
+
+            // if(!date || element.txnDate.startsWith(date)){
+            // // console.log(element);
+                
+            // }
+            if(element.statusDescription && (element.statusDescription == "Success" || element.statusDescription == "Payment Incomplete" ) && (!date || element.txnDate.startsWith(date))){
                 console.log(`Fetching transaction details for TNX ID: ${element?.txnNum}`);
                 const res = await client.get(
                     'https://gold.razer.com/api/webshopv2/' + element?.txnNum,
@@ -638,20 +643,20 @@ export default class PurchasesController {
                         },
                     }
                 );
+                
+                let pin = null;
 
                 if(res.data.fullfillment?.pins!=null){
-                    const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
-                    if(pin){
-                        arr.push({
+                     pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
+                    
+                }
+                arr.push({
                             "amount": element.amount,
                             "description": element.description,
                             "txnDate": element.txnDate,
                             "txnNum": element.txnNum,
                             "pin": pin
                         });
-                    }
-                }
-                
             }
         }
         console.log('data fetched successfully');
