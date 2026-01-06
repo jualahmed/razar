@@ -603,45 +603,66 @@ export default class PurchasesController {
 
         let purchase = await Purchase.find(params.id);
         let acc = await Banar.find(purchase?.account_id || 0);
-        let digi = await Digicode.query().where('purchase_id', params.id);
         const email = acc?.email || '';
         const passPlain = acc?.password || '';
         const loginData = await this.razarlogin({ email, passPlain});
         const parsed = loginData;
 
-        for (const element of digi) {
-            console.log(`Fetching transaction details for TNX ID: ${element?.tnx_id}`);
-            const res = await client.get(
-            'https://gold.razer.com/api/webshopv2/' + element?.tnx_id,
+        const r = await client.get(
+            'https://gold.razer.com/api/transactions/history',
             {
                 headers: {
-                accept: "application/json, text/plain, */*",
-                "x-razer-accesstoken": parsed.token,
-                "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
-                "x-razer-razerid": parsed.uuid,
-                referer: "https://gold.razer.com/global/en/account/summary",
+                    accept: "application/json, text/plain, */*",
+                    "x-razer-accesstoken": parsed.token,
+                    "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
+                    "x-razer-razerid": parsed.uuid,
+                    referer: "https://gold.razer.com/global/en/account/summary",
                 },
             }
-            );
+        );
 
-            if(res.data.fullfillment?.pins!=null){
-                const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
-                if(pin){
-                    element.code = pin;
-                    element.status = 1;
+        let data = r.data
+        let arr = [];
+        for (const element of data.Transactions) {
+            if(element.statusDescription && element.statusDescription == "Success"){
+                console.log(`Fetching transaction details for TNX ID: ${element?.txnNum}`);
+                const res = await client.get(
+                    'https://gold.razer.com/api/webshopv2/' + element?.txnNum,
+                    {
+                        headers: {
+                        accept: "application/json, text/plain, */*",
+                        "x-razer-accesstoken": parsed.token,
+                        "x-razer-fpid": "16f47c6af38e40251246e9f19a73f501",
+                        "x-razer-razerid": parsed.uuid,
+                        referer: "https://gold.razer.com/global/en/account/summary",
+                        },
+                    }
+                );
+
+                if(res.data.fullfillment?.pins!=null){
+                    const pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
+                    if(pin){
+                        arr.push({
+                            "amount": element.amount,
+                            "description": element.description,
+                            "txnDate": element.txnDate,
+                            "txnNum": element.txnNum,
+                            "pin": pin
+                        });
+                    }
                 }
-                await element.save();
+                
             }
-            await wait(500);
         }
-        return response.redirect('back');
-       
+        console.log('data fetched successfully');
+        console.log(arr)
+        return response.send(arr);
     }
 
 }
 
 
-    // https://gold.razer.com/api/transactions/history
+    // 
         // {
         //     "amount": 1.04,
         //     "currencyCode": "USD",
