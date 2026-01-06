@@ -162,8 +162,12 @@
 								Start Order
 							</a>
 						@end
-						<a href="/admin/purchase/{{ u.id }}/fatch-order" class="btn btn-primary mr-2" title="Edit">
-							Fatch Order
+					<a
+						href="/admin/purchase/{{ u.id }}/fatch-order?date={{ u.updatedAt.toFormat('yyyy-MM-dd') }}"
+						class="btn btn-primary mr-2"
+						title="Fetch Order"
+						>
+						Fetch Order
 						</a>
 						<a onclick="return confirm('Do you want to submit?')" href="{{ route('admin.delete.voucher',{id:u.id}) }}" class="btn btn-danger">DELETE</a>
 					</td>

@@ -599,7 +599,7 @@ export default class PurchasesController {
         return { results, errors };
     }
 
-    async getTransactionHistory({ params,response }: HttpContext){
+    async getTransactionHistory({ params,response,request }: HttpContext){
 
         let purchase = await Purchase.find(params.id);
         let acc = await Banar.find(purchase?.account_id || 0);
@@ -607,7 +607,7 @@ export default class PurchasesController {
         const passPlain = acc?.password || '';
         const loginData = await this.razarlogin({ email, passPlain});
         const parsed = loginData;
-
+        const date = request.input('date');
         const r = await client.get(
             'https://gold.razer.com/api/transactions/history',
             {
@@ -624,7 +624,7 @@ export default class PurchasesController {
         let data = r.data
         let arr = [];
         for (const element of data.Transactions) {
-            if(element.statusDescription && element.statusDescription == "Success"){
+            if(element.statusDescription && element.statusDescription == "Success" && (!date || element.txnDate.startsWith(date))){
                 console.log(`Fetching transaction details for TNX ID: ${element?.txnNum}`);
                 const res = await client.get(
                     'https://gold.razer.com/api/webshopv2/' + element?.txnNum,
