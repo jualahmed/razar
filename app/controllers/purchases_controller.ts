@@ -519,7 +519,7 @@ export default class PurchasesController {
         let token = loginData.token;
         for (let i = 1; i <= count; i++) {
 
-            if (i % 2200 === 0) {
+            if (i % 1000 === 0) {
                 console.log(`🔐 Relogin triggered at order #${i}`);
 
                 loginData = await this.razarlogin({ email, passPlain });
