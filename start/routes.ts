@@ -50,7 +50,7 @@ router.group(() => {
 ])
 
 router.get("/",function({response}){
-    return response.redirect('/admin')
+    return response.redirect('/admin/banar')
 })
 
 router.post('/complete', '#controllers/autotopups_controller.complete')
