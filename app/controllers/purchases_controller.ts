@@ -647,16 +647,28 @@ export default class PurchasesController {
                 let pin = null;
 
                 if(res.data.fullfillment?.pins!=null){
-                     pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
-                    
+                    pin = res.data.fullfillment?.pins[0]?.pinCode1 ?? null;
                 }
+
+                let digicode = await Digicode.query().where('tnx_id',element?.txnNum);
+                if(!digicode){
+                    // insert digicode
+                    await Digicode.create({
+                        code:pin,
+                        tnx_id:element?.txnNum,
+                        status:1,
+                        purchase_id:params.id,
+                        package_id:purchase?.package_id
+                    })
+                }
+
                 arr.push({
-                            "amount": element.amount,
-                            "description": element.description,
-                            "txnDate": element.txnDate,
-                            "txnNum": element.txnNum,
-                            "pin": pin
-                        });
+                    "amount": element.amount,
+                    "description": element.description,
+                    "txnDate": element.txnDate,
+                    "txnNum": element.txnNum,
+                    "pin": pin
+                });
             }
         }
         console.log('data fetched successfully');
