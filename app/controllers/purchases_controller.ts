@@ -652,6 +652,7 @@ export default class PurchasesController {
 
                 let digicode = await Digicode.query().where('tnx_id',element?.txnNum);
                 if(digicode.length==0){
+                    
                     // insert digicode
                     await Digicode.create({
                         code:pin,
