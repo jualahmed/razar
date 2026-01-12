@@ -132,6 +132,7 @@
 			<th>cmt</th>
 			<th>count</th>
 			<th>Delete</th>
+			<th>Date</th>
           </tr>
         </thead>
         <tbody>
@@ -171,6 +172,7 @@
 						</a>
 						<a onclick="return confirm('Do you want to submit?')" href="{{ route('admin.delete.voucher',{id:u.id}) }}" class="btn btn-danger">DELETE</a>
 					</td>
+					<td>{{ u.updatedAt.toFormat('yyyy-MM-dd') }}</td>
                 </tr>
             @end
         </tbody>

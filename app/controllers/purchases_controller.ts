@@ -629,7 +629,7 @@ export default class PurchasesController {
             // // console.log(element);
                 
             // }
-            if(element.statusDescription && (element.statusDescription == "Success" || element.statusDescription == "Payment Incomplete" || element.statusDescription == "Pending" ) && (!date || element.txnDate.startsWith(date))){
+            if(element.statusDescription && (element.statusDescription == "Success" || element.statusDescription == "Pending" ) && (!date || element.txnDate.startsWith(date))){
                 console.log(`Fetching transaction details for TNX ID: ${element?.txnNum}`);
                 const res = await client.get(
                     'https://gold.razer.com/api/webshopv2/' + element?.txnNum,
